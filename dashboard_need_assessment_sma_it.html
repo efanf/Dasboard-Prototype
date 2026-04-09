@@ -1,260 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Eksekutif - SMA IT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#059669', // Emerald 600
+                        secondary: '#0f766e', // Teal 700
+                        danger: '#e11d48', // Rose 600
+                        warning: '#d97706', // Amber 600
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Animasi loading muter */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .animate-spin-slow { animation: spin 2s linear infinite; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans antialiased selection:bg-primary selection:text-white">
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
-.tb-left{display:flex;align-items:center;gap:10px}
-.tb-icon{width:30px;height:30px;border-radius:var(--border-radius-md);background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#0C447C;flex-shrink:0}
-.tb-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
-.tb-sub{font-size:11px;color:var(--color-text-secondary)}
-.badge-blue{font-size:11px;padding:3px 9px;border-radius:var(--border-radius-md);background:#E6F1FB;color:#185FA5}
-.main{padding:12px 14px;display:flex;flex-direction:column;gap:12px}
-.sec-label{font-size:10px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;font-weight:500}
-.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.scard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
-.scard-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
-.scard-val{font-size:19px;font-weight:500;color:var(--color-text-primary)}
-.scard-sub{font-size:11px;margin-top:3px;display:flex;align-items:center;gap:4px}
-.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
-.dg{background:#3B6D11}.da{background:#BA7517}.dr{background:#A32D2D}
-.tg{color:#3B6D11}.ta{color:#BA7517}.tr{color:#A32D2D}
-.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
-.ph{padding:9px 13px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
-.ph-title{font-size:12px;font-weight:500;color:var(--color-text-primary)}
-.ph-meta{font-size:11px;color:var(--color-text-secondary)}
-.pb{padding:10px 13px}
-.na-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
-.na-row:last-child{border-bottom:none}
-.na-left{display:flex;flex-direction:column;gap:1px}
-.na-title{font-size:12px;color:var(--color-text-primary)}
-.na-src{font-size:10px;color:var(--color-text-secondary)}
-.pill{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
-.p-red{background:#FCEBEB;color:#A32D2D}
-.p-amber{background:#FAEEDA;color:#854F0B}
-.p-blue{background:#E6F1FB;color:#185FA5}
-.p-green{background:#EAF3DE;color:#3B6D11}
-.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.bar-name{font-size:11px;color:var(--color-text-secondary);width:100px;flex-shrink:0}
-.bar-track{flex:1;height:7px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px}
-.bar-pct{font-size:11px;color:var(--color-text-secondary);width:28px;text-align:right;flex-shrink:0}
-.prog-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
-.prog-row:last-child{border-bottom:none}
-.prog-label{font-size:12px;color:var(--color-text-primary)}
-.prog-bar-wrap{display:flex;align-items:center;gap:6px}
-.prog-track{width:70px;height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
-.prog-fill{height:100%;border-radius:3px}
-.prog-num{font-size:11px;color:var(--color-text-secondary);width:28px;text-align:right}
-.rec-panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
-.rec-head{padding:10px 14px;background:#E6F1FB;border-bottom:0.5px solid #B5D4F4}
-.rec-head-title{font-size:13px;font-weight:500;color:#0C447C}
-.rec-head-sub{font-size:11px;color:#185FA5;margin-top:1px}
-.rec-body{padding:10px 14px;display:flex;flex-direction:column;gap:8px}
-.rec-item{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:9px 12px;display:flex;gap:10px}
-.rec-num{font-size:12px;font-weight:500;color:var(--color-text-secondary);min-width:18px;flex-shrink:0;padding-top:1px}
-.rec-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
-.rec-risk{font-size:11px;color:var(--color-text-secondary)}
-.risk-r{color:#A32D2D}.risk-a{color:#BA7517}.risk-g{color:#3B6D11}
-.divider{height:0.5px;background:var(--color-border-tertiary)}
-.footer-bar{padding:8px 14px;display:flex;align-items:center;justify-content:space-between}
-.footer-txt{font-size:10px;color:var(--color-text-secondary)}
-.btn-sm{font-size:11px;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;color:var(--color-text-secondary)}
-.btn-sm:hover{background:var(--color-background-secondary)}
-</style>
+    <div class="max-w-md mx-auto bg-slate-50 min-h-screen shadow-2xl overflow-hidden relative pb-10">
 
-<h2 class="sr-only">Dashboard need assessment SMA IT swasta — indikator kesehatan sekolah, data need assessment, dan rekomendasi keputusan strategis.</h2>
-
-<div class="topbar">
-  <div class="tb-left">
-    <div class="tb-icon">IT</div>
-    <div>
-      <div class="tb-title">Dashboard Need Assessment — SMA IT Nurul Fikri</div>
-      <div class="tb-sub">Semester Genap 2025/2026 · Kepala Sekolah View · 9 Apr 2026</div>
-    </div>
-  </div>
-  <div class="badge-blue">Live</div>
-</div>
-
-<div class="main">
-
-  <div>
-    <div class="sec-label">Indikator Kesehatan Sekolah</div>
-    <div class="cards4">
-      <div class="scard">
-        <div class="scard-label">PPDB Aktif</div>
-        <div class="scard-val">218</div>
-        <div class="scard-sub"><span class="dot dg"></span><span class="tg">Target 200 — lewat</span></div>
-      </div>
-      <div class="scard">
-        <div class="scard-label">Kehadiran Guru</div>
-        <div class="scard-val">91%</div>
-        <div class="scard-sub"><span class="dot dg"></span><span class="tg">Baik</span></div>
-      </div>
-      <div class="scard">
-        <div class="scard-label">Serapan Anggaran</div>
-        <div class="scard-val">54%</div>
-        <div class="scard-sub"><span class="dot da"></span><span class="ta">Di bawah target</span></div>
-      </div>
-      <div class="scard">
-        <div class="scard-label">Komplain Orang Tua</div>
-        <div class="scard-val">31</div>
-        <div class="scard-sub"><span class="dot dr"></span><span class="tr">Belum ditindak</span></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="row2">
-
-    <div class="panel">
-      <div class="ph">
-        <span class="ph-title">Menu Need Assessment</span>
-        <span class="ph-meta">5 sumber data</span>
-      </div>
-      <div class="pb">
-        <div class="na-row">
-          <div class="na-left">
-            <span class="na-title">Keluhan orang tua siswa</span>
-            <span class="na-src">via formulir & WhatsApp</span>
-          </div>
-          <span class="pill p-red">31 item</span>
-        </div>
-        <div class="na-row">
-          <div class="na-left">
-            <span class="na-title">Evaluasi hasil belajar siswa</span>
-            <span class="na-src">Rapor semester ganjil</span>
-          </div>
-          <span class="pill p-amber">Perlu review</span>
-        </div>
-        <div class="na-row">
-          <div class="na-left">
-            <span class="na-title">Survei kepuasan guru</span>
-            <span class="na-src">Internal, 38 responden</span>
-          </div>
-          <span class="pill p-amber">72% puas</span>
-        </div>
-        <div class="na-row">
-          <div class="na-left">
-            <span class="na-title">Asesmen kebutuhan IT & lab</span>
-            <span class="na-src">Tim sarana prasarana</span>
-          </div>
-          <span class="pill p-red">Kritis</span>
-        </div>
-        <div class="na-row">
-          <div class="na-left">
-            <span class="na-title">Capaian program Islami</span>
-            <span class="na-src">Pembinaan & tahfidz</span>
-          </div>
-          <span class="pill p-green">On track</span>
-        </div>
-      </div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <div class="panel">
-        <div class="ph">
-          <span class="ph-title">Capaian akademik siswa</span>
-        </div>
-        <div class="pb" style="padding-top:12px">
-          <div class="bar-row">
-            <span class="bar-name">PAI & Karakter</span>
-            <div class="bar-track"><div class="bar-fill" style="width:88%;background:#1D9E75"></div></div>
-            <span class="bar-pct">88%</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-name">Bhs. Indonesia</span>
-            <div class="bar-track"><div class="bar-fill" style="width:79%;background:#1D9E75"></div></div>
-            <span class="bar-pct">79%</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-name">Matematika</span>
-            <div class="bar-track"><div class="bar-fill" style="width:61%;background:#BA7517"></div></div>
-            <span class="bar-pct">61%</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-name">IPA Terpadu</span>
-            <div class="bar-track"><div class="bar-fill" style="width:55%;background:#BA7517"></div></div>
-            <span class="bar-pct">55%</span>
-          </div>
-          <div class="bar-row">
-            <span class="bar-name">Informatika</span>
-            <div class="bar-track"><div class="bar-fill" style="width:44%;background:#A32D2D"></div></div>
-            <span class="bar-pct">44%</span>
-          </div>
-          <div class="bar-row" style="margin-bottom:0">
-            <span class="bar-name">Bhs. Inggris</span>
-            <div class="bar-track"><div class="bar-fill" style="width:52%;background:#BA7517"></div></div>
-            <span class="bar-pct">52%</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="ph">
-          <span class="ph-title">Infrastruktur & Lab IT</span>
-        </div>
-        <div class="pb">
-          <div class="prog-row">
-            <span class="prog-label">Komputer lab tersedia</span>
-            <div class="prog-bar-wrap">
-              <div class="prog-track"><div class="prog-fill" style="width:58%;background:#BA7517"></div></div>
-              <span class="prog-num">58%</span>
+        <!-- Header / Hero Section -->
+        <div class="bg-primary px-6 pt-10 pb-20 rounded-b-[2rem] shadow-md relative z-0">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white backdrop-blur-sm">
+                        <i class="fas fa-school text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-emerald-100 text-xs font-medium uppercase tracking-wider">Dashboard Eksekutif</p>
+                        <h1 class="text-white text-lg font-bold">SMA IT Nurul Fikri</h1>
+                    </div>
+                </div>
+                <button class="relative">
+                    <i class="fas fa-bell text-white text-xl"></i>
+                    <span class="absolute -top-1 -right-1 w-3 h-3 bg-danger rounded-full border-2 border-primary"></span>
+                </button>
             </div>
-          </div>
-          <div class="prog-row">
-            <span class="prog-label">Koneksi internet stabil</span>
-            <div class="prog-bar-wrap">
-              <div class="prog-track"><div class="prog-fill" style="width:40%;background:#A32D2D"></div></div>
-              <span class="prog-num">40%</span>
+            
+            <div class="text-white">
+                <h2 class="text-2xl font-semibold mb-1">Ahlan wa Sahlan, Ustadz.</h2>
+                <p class="text-emerald-100 text-sm">Berikut ringkasan data strategis hari ini.</p>
             </div>
-          </div>
-          <div class="prog-row">
-            <span class="prog-label">Proyektor kelas berfungsi</span>
-            <div class="prog-bar-wrap">
-              <div class="prog-track"><div class="prog-fill" style="width:72%;background:#1D9E75"></div></div>
-              <span class="prog-num">72%</span>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="px-5 -mt-14 relative z-10">
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
+                            <i class="fas fa-user-graduate text-sm"></i>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-green-100 text-green-700 rounded-full">+12%</span>
+                    </div>
+                    <p class="text-slate-500 text-xs font-medium mb-1">PPDB Aktif</p>
+                    <h3 class="text-2xl font-bold text-slate-800">218 <span class="text-xs font-normal text-slate-400">siswa</span></h3>
+                </div>
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="w-8 h-8 rounded-full bg-red-50 text-danger flex items-center justify-center">
+                            <i class="fas fa-comments text-sm"></i>
+                        </div>
+                        <span class="text-[10px] font-bold px-2 py-1 bg-red-100 text-red-700 rounded-full">Kritis</span>
+                    </div>
+                    <p class="text-slate-500 text-xs font-medium mb-1">Komplain Ortu</p>
+                    <h3 class="text-2xl font-bold text-slate-800">31 <span class="text-xs font-normal text-slate-400">kasus</span></h3>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+
+        <!-- Section: FITUR BARU - UPLOAD DOKUMEN -->
+        <div class="mt-6 px-5">
+            <h3 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <i class="fas fa-cloud-upload-alt text-primary"></i> Input Data Terbaru
+            </h3>
+            
+            <div class="bg-white rounded-2xl p-5 shadow-sm border-2 border-dashed border-slate-300 relative hover:bg-slate-50 transition-colors text-center overflow-hidden">
+                <!-- Input file disembunyikan tapi menutupi seluruh area kotak -->
+                <input type="file" id="fileUpload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="prosesUpload(event)">
+                
+                <!-- Tampilan Normal -->
+                <div id="ui-normal" class="relative z-0">
+                    <div class="flex justify-center mb-2">
+                        <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center text-primary">
+                            <i class="fas fa-file-invoice text-xl"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs font-bold text-slate-700">Upload Notulensi / Evaluasi KBM</p>
+                    <p class="text-[10px] text-slate-400 mt-1 mb-3">Format: PDF, Word, Excel. Sistem akan otomatis menyusun langkah strategis.</p>
+                    <span class="bg-slate-800 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg inline-block">Pilih File Laporan</span>
+                </div>
+
+                <!-- Tampilan Loading (Disembunyikan awalnya) -->
+                <div id="ui-loading" class="relative z-0 hidden py-2">
+                    <i class="fas fa-circle-notch animate-spin-slow text-3xl text-primary mb-3 inline-block"></i>
+                    <p class="text-xs font-bold text-slate-700">AI Sedang Mengekstrak Data...</p>
+                    <p class="text-[10px] text-slate-500 mt-1">Menganalisis file: <span id="nama-file" class="font-bold text-primary"></span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Needs Assessment (Status) -->
+        <div class="mt-6 px-5">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="flex items-center justify-between p-4 border-b border-slate-50">
+                    <div>
+                        <p class="text-sm font-medium text-slate-800">Fasilitas Lab IT</p>
+                        <p class="text-xs text-slate-400">Kapasitas & Koneksi</p>
+                    </div>
+                    <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">Kritis</span>
+                </div>
+                <div class="flex items-center justify-between p-4">
+                    <div>
+                        <p class="text-sm font-medium text-slate-800">Program Tahfidz</p>
+                        <p class="text-xs text-slate-400">Target Hafalan</p>
+                    </div>
+                    <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Aman</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: THE CORE - Rekomendasi Keputusan -->
+        <div class="mt-8 px-5">
+            <div class="bg-slate-800 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+                <!-- Background decoration -->
+                <div class="absolute -right-6 -top-6 w-24 h-24 bg-slate-700 rounded-full blur-2xl opacity-50"></div>
+                
+                <h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+                    <i class="fas fa-lightbulb text-amber-400"></i> Rekomendasi Eksekutif
+                </h3>
+                <p class="text-xs text-slate-300 mb-4">Pilih langkah strategis berdasarkan analisis data terbaru.</p>
+
+                <!-- Container untuk menampung kartu rekomendasi -->
+                <div id="container-rekomendasi" class="space-y-3">
+                    
+                    <!-- Keputusan 1 (Default) -->
+                    <div class="bg-white rounded-xl p-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 bg-amber-100 text-amber-700 rounded-md flex items-center justify-center shrink-0 mt-0.5">
+                                <span class="text-xs font-bold">1</span>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800 leading-tight mb-1">Upgrade Lab Komputer & Internet</h4>
+                                <p class="text-[11px] text-slate-500 mb-3 leading-relaxed">Keluhan utama siswa di mapel Informatika. Risiko anggaran sedang.</p>
+                                
+                                <div class="flex gap-2">
+                                    <button onclick="handleDecision(this, 'Upgrade Lab Disetujui')" class="flex-1 bg-primary hover:bg-emerald-700 text-white text-xs font-bold py-2 rounded-lg transition-colors">
+                                        Setujui
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-8 mb-4">
+            <p class="text-[10px] text-slate-400 font-medium tracking-wider uppercase">Prototype SIM Data-Driven</p>
+        </div>
+
     </div>
 
-  </div>
+    <!-- Script Logika Prototype -->
+    <script>
+        // Fungsi saat file dipilih
+        function prosesUpload(event) {
+            const fileInput = event.target;
+            if (fileInput.files.length === 0) return; // Kalau dibatalkan, stop.
 
-  <div class="rec-panel">
-    <div class="rec-head">
-      <div class="rec-head-title">Rekomendasi Keputusan Strategis</div>
-      <div class="rec-head-sub">Berdasarkan hasil need assessment terkini · 3 opsi prioritas</div>
-    </div>
-    <div class="rec-body">
-      <div class="rec-item">
-        <div class="rec-num">01</div>
-        <div>
-          <div class="rec-title">Upgrade lab komputer & bandwidth internet — prioritaskan untuk mapel Informatika</div>
-          <div class="rec-risk">Risiko: <span class="risk-a">Sedang</span> · Biaya investasi besar, tapi menopang identitas "IT" sekolah · Dampak jangka panjang</div>
-        </div>
-      </div>
-      <div class="rec-item">
-        <div class="rec-num">02</div>
-        <div>
-          <div class="rec-title">Program remedial terstruktur untuk Matematika, IPA, dan Bahasa Inggris lintas kelas</div>
-          <div class="rec-risk">Risiko: <span class="risk-g">Rendah</span> · Bisa dimulai segera dengan guru existing · Dampak nilai siswa jangka pendek</div>
-        </div>
-      </div>
-      <div class="rec-item">
-        <div class="rec-num">03</div>
-        <div>
-          <div class="rec-title">Bentuk desk respons keluhan orang tua — target respons maksimal 3 hari kerja</div>
-          <div class="rec-risk">Risiko: <span class="risk-g">Rendah</span> · Biaya minimal · Dampak reputasi & kepercayaan orang tua langsung terasa</div>
-        </div>
-      </div>
-    </div>
-  </div>
+            const namaFile = fileInput.files[0].name;
 
-  <div class="divider"></div>
-  <div class="footer-bar">
-    <span class="footer-txt">Rancangan konseptual — data ilustratif untuk keperluan tugas akademik</span>
-    <button class="btn-sm" onclick="sendPrompt('Tambahkan panel monitoring program tahfidz dan kegiatan ekstrakurikuler Islami ke dashboard ini')">Tambah panel lain ↗</button>
-  </div>
+            // 1. Ubah UI jadi mode Loading
+            document.getElementById('ui-normal').classList.add('hidden');
+            document.getElementById('ui-loading').classList.remove('hidden');
+            document.getElementById('nama-file').innerText = namaFile;
+            fileInput.disabled = true; // Kunci input sementara
 
-</div>
+            // 2. Simulasi AI sedang mikir (jeda 2.5 detik)
+            setTimeout(() => {
+                // Kembalikan UI ke normal
+                document.getElementById('ui-loading').classList.add('hidden');
+                document.getElementById('ui-normal').classList.remove('hidden');
+                fileInput.disabled = false;
+                fileInput.value = ""; // Reset input file
+
+                // Munculkan rekomendasi baru hasil analisis
+                munculkanRekomendasiBaru(namaFile);
+                
+                // Kasih feedback sukses ke user
+                // alert("Sistem berhasil mengekstrak data dari dokumen. Rekomendasi baru telah ditambahkan ke Panel Eksekutif.");
+            }, 2500);
+        }
+
+        // Fungsi untuk menambah kartu keputusan baru secara dinamis
+        function munculkanRekomendasiBaru(namaFile) {
+            const container = document.getElementById('container-rekomendasi');
+            
+            // Template HTML untuk kartu rekomendasi yang baru (warna beda biar mencolok)
+            const kartuBaru = `
+                <div class="bg-emerald-50 rounded-xl p-4 border-2 border-primary transform transition-all duration-500 animate-pulse" id="kartu-baru">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 bg-primary text-white rounded-md flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fas fa-robot text-[10px]"></i>
+                        </div>
+                        <div class="w-full">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[9px] font-bold bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full uppercase">Hasil Analisis Baru</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-slate-800 leading-tight mb-1">Tindak Lanjut: ${namaFile}</h4>
+                            <p class="text-[11px] text-slate-600 mb-3 leading-relaxed">Terdeteksi hambatan KBM dan anggaran dari file ini. Sistem menyarankan Rapat Dengar Pendapat dengan Waka Kurikulum.</p>
+                            
+                            <div class="flex gap-2">
+                                <button onclick="handleDecision(this, 'Jadwalkan Rapat Segera')" class="flex-1 bg-primary hover:bg-emerald-700 text-white text-xs font-bold py-2 rounded-lg transition-colors shadow-sm">
+                                    Jadwalkan Rapat
+                                </button>
+                                <button onclick="handleDecision(this, 'Arsipkan Dokumen')" class="flex-1 bg-white border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-bold py-2 rounded-lg transition-colors">
+                                    Arsipkan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Masukkan kartu baru ke urutan paling atas di dalam container
+            container.insertAdjacentHTML('afterbegin', kartuBaru);
+
+            // Hilangkan efek kedap-kedip (pulse) setelah 3 detik biar kelihatan natural
+            setTimeout(() => {
+                const elemenBaru = document.getElementById('kartu-baru');
+                if(elemenBaru) {
+                    elemenBaru.classList.remove('animate-pulse');
+                    elemenBaru.removeAttribute('id'); // bersihkan id
+                }
+            }, 3000);
+        }
+
+        // Fungsi interaksi tombol Setujui
+        function handleDecision(tombol, pesan) {
+            alert("✅ Keputusan Tercatat: " + pesan);
+            
+            // Ubah gaya tombol biar kelihatan udah diklik
+            tombol.innerText = "Telah Diproses";
+            tombol.className = "flex-1 bg-slate-200 text-slate-500 text-xs font-bold py-2 rounded-lg cursor-not-allowed";
+            tombol.disabled = true;
+            
+            // Sembunyikan tombol sebelahnya (kalau ada)
+            const tombolLain = tombol.parentElement.children;
+            for(let i=0; i < tombolLain.length; i++) {
+                if(tombolLain[i] !== tombol) {
+                    tombolLain[i].style.display = 'none';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

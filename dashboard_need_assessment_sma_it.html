@@ -1,0 +1,260 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.topbar{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.tb-left{display:flex;align-items:center;gap:10px}
+.tb-icon{width:30px;height:30px;border-radius:var(--border-radius-md);background:#E6F1FB;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#0C447C;flex-shrink:0}
+.tb-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.tb-sub{font-size:11px;color:var(--color-text-secondary)}
+.badge-blue{font-size:11px;padding:3px 9px;border-radius:var(--border-radius-md);background:#E6F1FB;color:#185FA5}
+.main{padding:12px 14px;display:flex;flex-direction:column;gap:12px}
+.sec-label{font-size:10px;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;font-weight:500}
+.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.cards4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.scard{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px}
+.scard-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+.scard-val{font-size:19px;font-weight:500;color:var(--color-text-primary)}
+.scard-sub{font-size:11px;margin-top:3px;display:flex;align-items:center;gap:4px}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dg{background:#3B6D11}.da{background:#BA7517}.dr{background:#A32D2D}
+.tg{color:#3B6D11}.ta{color:#BA7517}.tr{color:#A32D2D}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.ph{padding:9px 13px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.ph-title{font-size:12px;font-weight:500;color:var(--color-text-primary)}
+.ph-meta{font-size:11px;color:var(--color-text-secondary)}
+.pb{padding:10px 13px}
+.na-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.na-row:last-child{border-bottom:none}
+.na-left{display:flex;flex-direction:column;gap:1px}
+.na-title{font-size:12px;color:var(--color-text-primary)}
+.na-src{font-size:10px;color:var(--color-text-secondary)}
+.pill{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.p-red{background:#FCEBEB;color:#A32D2D}
+.p-amber{background:#FAEEDA;color:#854F0B}
+.p-blue{background:#E6F1FB;color:#185FA5}
+.p-green{background:#EAF3DE;color:#3B6D11}
+.bar-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.bar-name{font-size:11px;color:var(--color-text-secondary);width:100px;flex-shrink:0}
+.bar-track{flex:1;height:7px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px}
+.bar-pct{font-size:11px;color:var(--color-text-secondary);width:28px;text-align:right;flex-shrink:0}
+.prog-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.prog-row:last-child{border-bottom:none}
+.prog-label{font-size:12px;color:var(--color-text-primary)}
+.prog-bar-wrap{display:flex;align-items:center;gap:6px}
+.prog-track{width:70px;height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px}
+.prog-num{font-size:11px;color:var(--color-text-secondary);width:28px;text-align:right}
+.rec-panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.rec-head{padding:10px 14px;background:#E6F1FB;border-bottom:0.5px solid #B5D4F4}
+.rec-head-title{font-size:13px;font-weight:500;color:#0C447C}
+.rec-head-sub{font-size:11px;color:#185FA5;margin-top:1px}
+.rec-body{padding:10px 14px;display:flex;flex-direction:column;gap:8px}
+.rec-item{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:9px 12px;display:flex;gap:10px}
+.rec-num{font-size:12px;font-weight:500;color:var(--color-text-secondary);min-width:18px;flex-shrink:0;padding-top:1px}
+.rec-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.rec-risk{font-size:11px;color:var(--color-text-secondary)}
+.risk-r{color:#A32D2D}.risk-a{color:#BA7517}.risk-g{color:#3B6D11}
+.divider{height:0.5px;background:var(--color-border-tertiary)}
+.footer-bar{padding:8px 14px;display:flex;align-items:center;justify-content:space-between}
+.footer-txt{font-size:10px;color:var(--color-text-secondary)}
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;color:var(--color-text-secondary)}
+.btn-sm:hover{background:var(--color-background-secondary)}
+</style>
+
+<h2 class="sr-only">Dashboard need assessment SMA IT swasta — indikator kesehatan sekolah, data need assessment, dan rekomendasi keputusan strategis.</h2>
+
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-icon">IT</div>
+    <div>
+      <div class="tb-title">Dashboard Need Assessment — SMA IT Nurul Fikri</div>
+      <div class="tb-sub">Semester Genap 2025/2026 · Kepala Sekolah View · 9 Apr 2026</div>
+    </div>
+  </div>
+  <div class="badge-blue">Live</div>
+</div>
+
+<div class="main">
+
+  <div>
+    <div class="sec-label">Indikator Kesehatan Sekolah</div>
+    <div class="cards4">
+      <div class="scard">
+        <div class="scard-label">PPDB Aktif</div>
+        <div class="scard-val">218</div>
+        <div class="scard-sub"><span class="dot dg"></span><span class="tg">Target 200 — lewat</span></div>
+      </div>
+      <div class="scard">
+        <div class="scard-label">Kehadiran Guru</div>
+        <div class="scard-val">91%</div>
+        <div class="scard-sub"><span class="dot dg"></span><span class="tg">Baik</span></div>
+      </div>
+      <div class="scard">
+        <div class="scard-label">Serapan Anggaran</div>
+        <div class="scard-val">54%</div>
+        <div class="scard-sub"><span class="dot da"></span><span class="ta">Di bawah target</span></div>
+      </div>
+      <div class="scard">
+        <div class="scard-label">Komplain Orang Tua</div>
+        <div class="scard-val">31</div>
+        <div class="scard-sub"><span class="dot dr"></span><span class="tr">Belum ditindak</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row2">
+
+    <div class="panel">
+      <div class="ph">
+        <span class="ph-title">Menu Need Assessment</span>
+        <span class="ph-meta">5 sumber data</span>
+      </div>
+      <div class="pb">
+        <div class="na-row">
+          <div class="na-left">
+            <span class="na-title">Keluhan orang tua siswa</span>
+            <span class="na-src">via formulir & WhatsApp</span>
+          </div>
+          <span class="pill p-red">31 item</span>
+        </div>
+        <div class="na-row">
+          <div class="na-left">
+            <span class="na-title">Evaluasi hasil belajar siswa</span>
+            <span class="na-src">Rapor semester ganjil</span>
+          </div>
+          <span class="pill p-amber">Perlu review</span>
+        </div>
+        <div class="na-row">
+          <div class="na-left">
+            <span class="na-title">Survei kepuasan guru</span>
+            <span class="na-src">Internal, 38 responden</span>
+          </div>
+          <span class="pill p-amber">72% puas</span>
+        </div>
+        <div class="na-row">
+          <div class="na-left">
+            <span class="na-title">Asesmen kebutuhan IT & lab</span>
+            <span class="na-src">Tim sarana prasarana</span>
+          </div>
+          <span class="pill p-red">Kritis</span>
+        </div>
+        <div class="na-row">
+          <div class="na-left">
+            <span class="na-title">Capaian program Islami</span>
+            <span class="na-src">Pembinaan & tahfidz</span>
+          </div>
+          <span class="pill p-green">On track</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Capaian akademik siswa</span>
+        </div>
+        <div class="pb" style="padding-top:12px">
+          <div class="bar-row">
+            <span class="bar-name">PAI & Karakter</span>
+            <div class="bar-track"><div class="bar-fill" style="width:88%;background:#1D9E75"></div></div>
+            <span class="bar-pct">88%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">Bhs. Indonesia</span>
+            <div class="bar-track"><div class="bar-fill" style="width:79%;background:#1D9E75"></div></div>
+            <span class="bar-pct">79%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">Matematika</span>
+            <div class="bar-track"><div class="bar-fill" style="width:61%;background:#BA7517"></div></div>
+            <span class="bar-pct">61%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">IPA Terpadu</span>
+            <div class="bar-track"><div class="bar-fill" style="width:55%;background:#BA7517"></div></div>
+            <span class="bar-pct">55%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">Informatika</span>
+            <div class="bar-track"><div class="bar-fill" style="width:44%;background:#A32D2D"></div></div>
+            <span class="bar-pct">44%</span>
+          </div>
+          <div class="bar-row" style="margin-bottom:0">
+            <span class="bar-name">Bhs. Inggris</span>
+            <div class="bar-track"><div class="bar-fill" style="width:52%;background:#BA7517"></div></div>
+            <span class="bar-pct">52%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="ph">
+          <span class="ph-title">Infrastruktur & Lab IT</span>
+        </div>
+        <div class="pb">
+          <div class="prog-row">
+            <span class="prog-label">Komputer lab tersedia</span>
+            <div class="prog-bar-wrap">
+              <div class="prog-track"><div class="prog-fill" style="width:58%;background:#BA7517"></div></div>
+              <span class="prog-num">58%</span>
+            </div>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Koneksi internet stabil</span>
+            <div class="prog-bar-wrap">
+              <div class="prog-track"><div class="prog-fill" style="width:40%;background:#A32D2D"></div></div>
+              <span class="prog-num">40%</span>
+            </div>
+          </div>
+          <div class="prog-row">
+            <span class="prog-label">Proyektor kelas berfungsi</span>
+            <div class="prog-bar-wrap">
+              <div class="prog-track"><div class="prog-fill" style="width:72%;background:#1D9E75"></div></div>
+              <span class="prog-num">72%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="rec-panel">
+    <div class="rec-head">
+      <div class="rec-head-title">Rekomendasi Keputusan Strategis</div>
+      <div class="rec-head-sub">Berdasarkan hasil need assessment terkini · 3 opsi prioritas</div>
+    </div>
+    <div class="rec-body">
+      <div class="rec-item">
+        <div class="rec-num">01</div>
+        <div>
+          <div class="rec-title">Upgrade lab komputer & bandwidth internet — prioritaskan untuk mapel Informatika</div>
+          <div class="rec-risk">Risiko: <span class="risk-a">Sedang</span> · Biaya investasi besar, tapi menopang identitas "IT" sekolah · Dampak jangka panjang</div>
+        </div>
+      </div>
+      <div class="rec-item">
+        <div class="rec-num">02</div>
+        <div>
+          <div class="rec-title">Program remedial terstruktur untuk Matematika, IPA, dan Bahasa Inggris lintas kelas</div>
+          <div class="rec-risk">Risiko: <span class="risk-g">Rendah</span> · Bisa dimulai segera dengan guru existing · Dampak nilai siswa jangka pendek</div>
+        </div>
+      </div>
+      <div class="rec-item">
+        <div class="rec-num">03</div>
+        <div>
+          <div class="rec-title">Bentuk desk respons keluhan orang tua — target respons maksimal 3 hari kerja</div>
+          <div class="rec-risk">Risiko: <span class="risk-g">Rendah</span> · Biaya minimal · Dampak reputasi & kepercayaan orang tua langsung terasa</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="footer-bar">
+    <span class="footer-txt">Rancangan konseptual — data ilustratif untuk keperluan tugas akademik</span>
+    <button class="btn-sm" onclick="sendPrompt('Tambahkan panel monitoring program tahfidz dan kegiatan ekstrakurikuler Islami ke dashboard ini')">Tambah panel lain ↗</button>
+  </div>
+
+</div>

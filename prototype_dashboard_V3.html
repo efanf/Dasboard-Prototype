@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Uji Coba Prototype SMA IT — Dashboard Eksekutif</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;}
+.app{display:grid;grid-template-columns:240px 1fr;grid-template-rows:56px 1fr;min-height:100vh;background:#F0FDF4;}
+.topbar{grid-column:1/-1;background:#064E3B;display:flex;align-items:center;justify-content:space-between;padding:0 24px;border-bottom:1px solid #065F46;position:sticky;top:0;z-index:100;}
+.sidebar{background:#065F46;padding:24px 0;display:flex;flex-direction:column;gap:2px;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;}
+.main{padding:28px;overflow-y:auto;background:#F0FDF4;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;color:#A7F3D0;cursor:pointer;border-left:3px solid transparent;transition:all .15s;}
+.nav-item:hover{background:rgba(255,255,255,.07);color:white;}
+.nav-item.active{background:rgba(255,255,255,.12);color:white;border-left-color:#34D399;}
+.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:.8;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px;}
+.kpi{background:white;border-radius:12px;padding:18px;border:0.5px solid #D1FAE5;transition:box-shadow .2s;}
+.kpi:hover{box-shadow:0 4px 12px rgba(6,78,59,.08);}
+.kpi-label{font-size:11px;color:#6EE7B7;font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;}
+.kpi-val{font-size:26px;font-weight:600;color:#064E3B;line-height:1;}
+.kpi-sub{font-size:11px;color:#6B7280;margin-top:4px;}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;}
+.b-green{background:#D1FAE5;color:#065F46;}
+.b-red{background:#FEE2E2;color:#991B1B;}
+.b-amber{background:#FEF3C7;color:#92400E;}
+.b-blue{background:#DBEAFE;color:#1E40AF;}
+.b-teal{background:#CCFBF1;color:#134E4A;}
+.b-purple{background:#EDE9FE;color:#4C1D95;}
+.two-col{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;}
+.card{background:white;border-radius:12px;border:0.5px solid #D1FAE5;padding:20px;}
+.card-title{font-size:13px;font-weight:600;color:#064E3B;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.status-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:0.5px solid #F0FDF4;}
+.status-row:last-child{border-bottom:none;}
+.reko-panel{background:#064E3B;border-radius:12px;padding:20px;}
+.reko-card{background:white;border-radius:10px;padding:16px;margin-bottom:10px;}
+.reko-card-ai{background:#ECFDF5;border:1.5px solid #34D399;border-radius:10px;padding:16px;margin-bottom:10px;}
+.reko-card:last-child,.reko-card-ai:last-child{margin-bottom:0;}
+.num-b{width:22px;height:22px;background:#FEF3C7;color:#92400E;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.ai-b{width:22px;height:22px;background:#059669;color:white;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.btn-primary{background:#059669;color:white;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;flex:1;transition:background .15s;}
+.btn-primary:hover{background:#047857;}
+.btn-ghost{background:white;border:0.5px solid #D1FAE5;color:#374151;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;flex:1;transition:background .15s;}
+.btn-ghost:hover{background:#F9FAFB;}
+.btn-done{background:#F3F4F6;color:#9CA3AF;border:none;border-radius:7px;padding:7px 14px;font-size:11px;font-weight:600;cursor:not-allowed;flex:1;}
+.spinner{width:24px;height:24px;border:3px solid #D1FAE5;border-top-color:#059669;border-radius:50%;animation:spin .8s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.trend-bar-wrap{margin-top:16px;}
+.trend-bar{height:6px;background:#D1FAE5;border-radius:3px;overflow:hidden;}
+.trend-fill{height:100%;border-radius:3px;transition:width .8s ease;}
+.section-head{font-size:11px;font-weight:600;color:#6EE7B7;text-transform:uppercase;letter-spacing:.07em;padding:18px 20px 8px;border-top:1px solid rgba(255,255,255,.07);margin-top:6px;}
+.topbar-title{font-size:15px;font-weight:600;color:white;letter-spacing:.01em;}
+.topbar-right{display:flex;align-items:center;gap:16px;}
+.avatar{width:32px;height:32px;border-radius:50%;background:#34D399;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#064E3B;}
+.notif-wrap{position:relative;cursor:pointer;}
+.notif-dot{position:absolute;top:-1px;right:-1px;width:7px;height:7px;background:#EF4444;border-radius:50%;border:1.5px solid #064E3B;}
+.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.mini-card{background:#F0FDF4;border-radius:8px;padding:12px;border:0.5px solid #D1FAE5;}
+.sidebar-logo{padding:0 20px 18px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px;}
+.agenda-panel{background:white;border-radius:12px;border:0.5px solid #D1FAE5;padding:20px;margin-bottom:14px;}
+.agenda-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid #F0FDF4;}
+.agenda-item:last-child{border-bottom:none;}
+.agenda-time{font-size:10px;font-weight:700;color:#059669;background:#D1FAE5;padding:3px 7px;border-radius:5px;white-space:nowrap;min-width:52px;text-align:center;margin-top:1px;}
+.agenda-title{font-size:12px;font-weight:600;color:#064E3B;margin-bottom:2px;}
+.agenda-sub{font-size:11px;color:#6B7280;}
+.notif-panel{background:#FFFBEB;border:0.5px solid #FDE68A;border-radius:12px;padding:16px;}
+.notif-title{font-size:11px;font-weight:600;color:#92400E;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.notif-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px;}
+.notif-item:last-child{margin-bottom:0;}
+.notif-icon{font-size:13px;flex-shrink:0;margin-top:1px;}
+.notif-text{font-size:11px;color:#78350F;line-height:1.5;}
+.notif-time{font-size:10px;color:#B45309;margin-top:2px;}
+.chart-wrap{position:relative;width:100%;margin-top:8px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+.page{display:none;}
+.page.active{display:block;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{padding:10px 8px;font-weight:500;color:#6B7280;border-bottom:1px solid #D1FAE5;text-align:left;}
+td{padding:10px 8px;border-bottom:0.5px solid #F0FDF4;color:#374151;}
+tr:last-child td{border-bottom:none;}
+.progress-row{margin-bottom:12px;}
+.progress-label-row{display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;}
+.progress-track{height:8px;background:#D1FAE5;border-radius:4px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:4px;}
+.juz-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;}
+.juz-cell{aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;cursor:pointer;transition:transform .1s;}
+.juz-cell:hover{transform:scale(1.1);}
+.juz-done{background:#059669;color:white;}
+.juz-progress{background:#FEF3C7;color:#92400E;}
+.juz-empty{background:#F0FDF4;color:#9CA3AF;border:0.5px solid #D1FAE5;}
+.stat-big{font-size:32px;font-weight:700;color:#064E3B;line-height:1;}
+.stat-label{font-size:11px;color:#6B7280;margin-top:2px;}
+.timeline{position:relative;padding-left:20px;border-left:2px solid #D1FAE5;}
+.tl-item{position:relative;margin-bottom:24px;}
+.tl-dot{position:absolute;left:-26px;top:0;width:10px;height:10px;border-radius:50%;border:2px solid white;}
+.tl-date{font-size:10px;font-weight:600;color:#6B7280;margin-bottom:4px;}
+.tl-card{background:#F0FDF4;border:0.5px solid #A7F3D0;border-radius:8px;padding:14px;}
+.tl-card.old{background:white;border-color:#E5E7EB;}
+.tl-title{font-size:13px;font-weight:600;color:#064E3B;margin-bottom:6px;}
+.tl-desc{font-size:11px;color:#374151;margin-bottom:8px;line-height:1.6;}
+.tl-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:14px;padding:24px;width:440px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,.15);}
+.modal-title{font-size:15px;font-weight:700;color:#064E3B;margin-bottom:8px;}
+.modal-desc{font-size:12px;color:#6B7280;margin-bottom:16px;line-height:1.6;}
+.modal-input{width:100%;border:1px solid #D1FAE5;border-radius:8px;padding:9px 12px;font-size:12px;outline:none;margin-bottom:10px;}
+.modal-input:focus{border-color:#059669;}
+.modal-actions{display:flex;gap:8px;margin-top:4px;}
+.chip{display:inline-flex;align-items:center;gap:5px;background:#F0FDF4;border:0.5px solid #A7F3D0;border-radius:999px;padding:4px 10px;font-size:10px;font-weight:600;color:#065F46;cursor:pointer;transition:background .1s;}
+.chip:hover{background:#ECFDF5;}
+.chip.active-chip{background:#059669;color:white;border-color:#059669;}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="width:32px;height:32px;background:#34D399;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;">🏫</div>
+      <div>
+        <div class="topbar-title">Uji Coba Prototype SMA IT</div>
+        <div style="font-size:10px;color:#6EE7B7;letter-spacing:.04em;">Sistem Informasi Manajemen Eksekutif</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div style="font-size:12px;color:#A7F3D0;" id="tanggal-topbar">Kamis, 9 April 2026</div>
+      <div class="notif-wrap" onclick="bukaHalaman('notif')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A7F3D0" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-dot" id="notif-dot"></div>
+      </div>
+      <div class="avatar" style="cursor:pointer;" onclick="bukaModal('profil')">US</div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div style="font-size:10px;font-weight:600;color:#6EE7B7;letter-spacing:.06em;text-transform:uppercase;">Menu Utama</div>
+    </div>
+    <div class="nav-item active" id="menu-dashboard" onclick="bukaHalaman('dashboard')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" id="menu-siswa" onclick="bukaHalaman('siswa')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      PPDB & Siswa
+    </div>
+    <div class="nav-item" id="menu-kurikulum" onclick="bukaHalaman('kurikulum')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      Kurikulum & KBM
+    </div>
+    <div class="nav-item" id="menu-keuangan" onclick="bukaHalaman('keuangan')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Keuangan
+    </div>
+    <div class="section-head">Program Unggulan</div>
+    <div class="nav-item" id="menu-tahfidz" onclick="bukaHalaman('tahfidz')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Tahfidz Al-Qur'an
+    </div>
+    <div class="nav-item" id="menu-lab" onclick="bukaHalaman('lab')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Lab & Fasilitas IT
+    </div>
+    <div class="section-head">Laporan</div>
+    <div class="nav-item" id="menu-evaluasi" onclick="bukaHalaman('evaluasi')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Evaluasi Bulanan
+    </div>
+    <div class="nav-item" id="menu-riwayat" onclick="bukaHalaman('riwayat')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Riwayat Keputusan
+    </div>
+    <div class="nav-item" id="menu-notif" onclick="bukaHalaman('notif')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      Notifikasi
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- ===== DASHBOARD ===== -->
+    <div class="page active" id="halaman-dashboard">
+      <div style="margin-bottom:20px;">
+        <div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Ahlan wa Sahlan, Ustadz.</div>
+        <div style="font-size:13px;color:#059669;">Ringkasan data strategis & rekomendasi AI hari ini — Kamis, 9 April 2026.</div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div class="kpi-label">PPDB Aktif</div><span class="badge b-green">+12%</span></div>
+          <div class="kpi-val" style="margin-top:8px;">218</div>
+          <div class="kpi-sub">dari target 250 siswa</div>
+          <div class="trend-bar-wrap"><div class="trend-bar"><div class="trend-fill" style="width:87%;background:#059669;"></div></div></div>
+        </div>
+        <div class="kpi">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div class="kpi-label">Komplain Ortu</div><span class="badge b-red">Kritis</span></div>
+          <div class="kpi-val" style="color:#B91C1C;margin-top:8px;">31</div>
+          <div class="kpi-sub">kasus aktif minggu ini</div>
+          <div class="trend-bar-wrap"><div class="trend-bar"><div class="trend-fill" style="width:62%;background:#EF4444;"></div></div></div>
+        </div>
+        <div class="kpi">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div class="kpi-label">Target Tahfidz</div><span class="badge b-teal">Aman</span></div>
+          <div class="kpi-val" style="color:#0F766E;margin-top:8px;">94%</div>
+          <div class="kpi-sub">siswa capai target juz</div>
+          <div class="trend-bar-wrap"><div class="trend-bar"><div class="trend-fill" style="width:94%;background:#0D9488;"></div></div></div>
+        </div>
+        <div class="kpi">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;"><div class="kpi-label">Lab IT</div><span class="badge b-red">Kritis</span></div>
+          <div class="kpi-val" style="color:#B91C1C;margin-top:8px;">41%</div>
+          <div class="kpi-sub">kapasitas berfungsi normal</div>
+          <div class="trend-bar-wrap"><div class="trend-bar"><div class="trend-fill" style="width:41%;background:#EF4444;"></div></div></div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="three-col">
+        <div class="card">
+          <div class="card-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Tren PPDB 6 Bulan
+          </div>
+          <canvas id="chart-ppdb" height="130"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Distribusi Nilai UTS
+          </div>
+          <canvas id="chart-nilai" height="130"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Serapan Anggaran Q1
+          </div>
+          <canvas id="chart-anggaran" height="130"></canvas>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="card" style="margin-bottom:18px;">
+            <div class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+              Tren & Status Strategis
+            </div>
+            <div class="mini-grid">
+              <div class="mini-card"><div style="font-size:10px;color:#6B7280;margin-bottom:4px;font-weight:500;">Kehadiran Guru</div><div style="font-size:20px;font-weight:700;color:#064E3B;">97%</div><div style="font-size:10px;color:#059669;">↑ stabil minggu ini</div></div>
+              <div class="mini-card"><div style="font-size:10px;color:#6B7280;margin-bottom:4px;font-weight:500;">Nilai Rata-rata UTS</div><div style="font-size:20px;font-weight:700;color:#064E3B;">78.4</div><div style="font-size:10px;color:#D97706;">↓ -2 poin vs semester lalu</div></div>
+              <div class="mini-card"><div style="font-size:10px;color:#6B7280;margin-bottom:4px;font-weight:500;">Anggaran Terserap</div><div style="font-size:20px;font-weight:700;color:#064E3B;">68%</div><div style="font-size:10px;color:#6B7280;">dari total RKAS Q1</div></div>
+              <div class="mini-card"><div style="font-size:10px;color:#6B7280;margin-bottom:4px;font-weight:500;">Laporan Masuk</div><div style="font-size:20px;font-weight:700;color:#064E3B;">12</div><div style="font-size:10px;color:#6B7280;">dokumen bulan ini</div></div>
+            </div>
+            <div style="border-top:0.5px solid #D1FAE5;padding-top:14px;">
+              <div style="font-size:11px;font-weight:600;color:#065F46;margin-bottom:10px;">Status Program</div>
+              <div class="status-row"><div><div style="font-size:13px;font-weight:500;color:#064E3B;">Fasilitas Lab IT</div><div style="font-size:11px;color:#6B7280;">Kapasitas & koneksi internet</div></div><span class="badge b-red">Kritis</span></div>
+              <div class="status-row"><div><div style="font-size:13px;font-weight:500;color:#064E3B;">Program Tahfidz</div><div style="font-size:11px;color:#6B7280;">Target hafalan siswa</div></div><span class="badge b-green">Aman</span></div>
+              <div class="status-row"><div><div style="font-size:13px;font-weight:500;color:#064E3B;">PPDB Gelombang 2</div><div style="font-size:11px;color:#6B7280;">Pendaftar & seleksi aktif</div></div><span class="badge b-amber">Proses</span></div>
+              <div class="status-row"><div><div style="font-size:13px;font-weight:500;color:#064E3B;">Akreditasi Dokumen</div><div style="font-size:11px;color:#6B7280;">Kelengkapan berkas BAN-S/M</div></div><span class="badge b-blue">Review</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Input Data & Dokumen
+            </div>
+            <div style="border:2px dashed #6EE7B7;border-radius:10px;padding:20px;text-align:center;background:#F0FDF4;position:relative;">
+              <input type="file" id="fileUpload" accept=".pdf,.doc,.docx,.xls,.xlsx" onchange="prosesUpload(event)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;">
+              <div id="ui-normal">
+                <div style="width:40px;height:40px;background:#D1FAE5;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:18px;">📄</div>
+                <div style="font-size:13px;font-weight:600;color:#064E3B;margin-bottom:4px;">Upload Notulensi / Evaluasi KBM</div>
+                <div style="font-size:11px;color:#6B7280;margin-bottom:12px;">PDF, Word, Excel — AI akan otomatis menyusun langkah strategis dari dokumen Anda</div>
+                <span style="background:#064E3B;color:white;font-size:11px;font-weight:600;padding:8px 18px;border-radius:7px;pointer-events:none;">Pilih File Laporan</span>
+              </div>
+              <div id="ui-loading" style="display:none;padding:8px 0;">
+                <div class="spinner" style="margin:0 auto 10px;"></div>
+                <div style="font-size:13px;font-weight:600;color:#064E3B;margin-bottom:4px;">AI sedang mengekstrak & menganalisis...</div>
+                <div style="font-size:11px;color:#6B7280;">Memproses: <span id="nama-file" style="font-weight:600;color:#059669;"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="agenda-panel">
+            <div class="card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Agenda Hari Ini
+            </div>
+            <div class="agenda-item"><div class="agenda-time">07.30</div><div><div class="agenda-title">Apel Pagi & Briefing Guru</div><div class="agenda-sub">Aula Utama — Semua Waka hadir</div></div></div>
+            <div class="agenda-item"><div class="agenda-time">09.00</div><div><div class="agenda-title">Rapat Evaluasi PPDB Gel. 2</div><div class="agenda-sub">Ruang Kepala Sekolah — Tim Panitia</div></div></div>
+            <div class="agenda-item"><div class="agenda-time">11.00</div><div><div class="agenda-title">Kunjungan Tim BAN-S/M</div><div class="agenda-sub">Verifikasi dokumen akreditasi</div></div></div>
+            <div class="agenda-item"><div class="agenda-time">13.30</div><div><div class="agenda-title">Koordinasi Lab IT — Vendor</div><div class="agenda-sub">Tindak lanjut upgrade jaringan</div></div></div>
+            <div class="agenda-item"><div class="agenda-time">15.00</div><div><div class="agenda-title">Sidang Pleno Wali Kelas</div><div class="agenda-sub">Review nilai & kehadiran siswa</div></div></div>
+          </div>
+
+          <div class="notif-panel" style="margin-bottom:14px;">
+            <div class="notif-title">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#92400E" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              Notifikasi Penting
+            </div>
+            <div class="notif-item"><div class="notif-icon">🔴</div><div><div class="notif-text">31 komplain orang tua belum direspons — batas waktu 3x24 jam hampir habis</div><div class="notif-time">Hari ini, 06.15</div></div></div>
+            <div class="notif-item"><div class="notif-icon">🟡</div><div><div class="notif-text">Anggaran Lab IT Q2 belum diajukan ke bendahara — deadline 11 April</div><div class="notif-time">Kemarin, 16.40</div></div></div>
+            <div class="notif-item"><div class="notif-icon">🔵</div><div><div class="notif-text">3 dokumen akreditasi menunggu tanda tangan kepala sekolah</div><div class="notif-time">Kemarin, 14.00</div></div></div>
+            <div class="notif-item"><div class="notif-icon">🟢</div><div><div class="notif-text">Laporan Tahfidz bulan Maret telah diverifikasi koordinator</div><div class="notif-time">2 hari lalu</div></div></div>
+          </div>
+
+          <div class="reko-panel">
+            <div style="font-size:13px;font-weight:600;color:white;margin-bottom:4px;display:flex;align-items:center;gap:7px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2.5"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.5 4.5-3 6l-1 1H9l-1-1C6.5 13.5 5 11.5 5 9a7 7 0 0 1 7-7z"/></svg>
+              Rekomendasi Eksekutif
+            </div>
+            <div style="font-size:11px;color:#6EE7B7;margin-bottom:16px;">Pilih langkah strategis berdasarkan analisis data.</div>
+            <div id="container-rekomendasi">
+              <div class="reko-card">
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div class="num-b">1</div>
+                  <div style="flex:1;">
+                    <div style="font-size:12px;font-weight:600;color:#064E3B;margin-bottom:3px;">Upgrade Lab Komputer & Internet</div>
+                    <div style="font-size:11px;color:#6B7280;margin-bottom:10px;line-height:1.5;">Kapasitas Lab saat ini hanya 41%. Berdampak langsung ke KBM.</div>
+                    <div style="display:flex;gap:7px;"><button class="btn-primary" onclick="handleDecision(this,'Upgrade Lab Disetujui')">Setujui</button></div>
+                  </div>
+                </div>
+              </div>
+              <div class="reko-card">
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div class="num-b">2</div>
+                  <div style="flex:1;">
+                    <div style="font-size:12px;font-weight:600;color:#064E3B;margin-bottom:3px;">Percepat penanganan 31 komplain ortu</div>
+                    <div style="font-size:11px;color:#6B7280;margin-bottom:10px;line-height:1.5;">Eskalasi ke Waka Kesiswaan. Batas respons 3x24 jam.</div>
+                    <div style="display:flex;gap:7px;"><button class="btn-primary" onclick="handleDecision(this,'Komplain Dieskalasi')">Setujui</button><button class="btn-ghost" onclick="handleDecision(this,'Ditinjau Lebih Lanjut')">Tinjau</button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Matriks Prioritas -->
+      <div class="card" style="margin-top:18px;">
+        <div class="card-title">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+          Matriks Prioritas Eksekusi (Impact vs Effort)
+        </div>
+        <div style="font-size:11px;color:#6B7280;margin-bottom:16px;">Pemetaan usulan program berdasarkan Dampak terhadap KBM dan Usaha yang diperlukan.</div>
+        <div style="display:grid;grid-template-columns:20px 1fr 1fr;grid-template-rows:1fr 1fr 20px;gap:8px;">
+          <div style="grid-row:1/3;grid-column:1;writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-size:10px;font-weight:600;color:#6B7280;letter-spacing:.05em;">Dampak ke KBM / Siswa →</div>
+          <div style="grid-row:1;grid-column:2;background:#ECFDF5;border:1.5px dashed #34D399;border-radius:8px;padding:14px;">
+            <div style="font-size:10px;font-weight:700;color:#059669;margin-bottom:10px;">QUICK WINS (Prioritas Utama)</div>
+            <div class="reko-card" style="border:0.5px solid #A7F3D0;padding:10px;font-size:11px;margin-bottom:8px;"><span style="font-weight:600;color:#064E3B;">Upgrade Router WiFi Lab IT</span><br><span style="color:#6B7280;font-size:10px;">Biaya 2jt. Langsung selesaikan komplain mapel informatika.</span></div>
+            <div class="reko-card" style="border:0.5px solid #A7F3D0;padding:10px;font-size:11px;margin-bottom:0;"><span style="font-weight:600;color:#064E3B;">Reminder Otomatis Tunggakan PPDB</span><br><span style="color:#6B7280;font-size:10px;">Cukup set-up sistem WA. Amankan cashflow.</span></div>
+          </div>
+          <div style="grid-row:1;grid-column:3;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:14px;">
+            <div style="font-size:10px;font-weight:700;color:#1D4ED8;margin-bottom:10px;">PROYEK STRATEGIS (Rencanakan)</div>
+            <div class="reko-card" style="border:0.5px solid #93C5FD;padding:10px;font-size:11px;margin-bottom:0;"><span style="font-weight:600;color:#1E3A8A;">Pengadaan 20 PC Baru Lab IT</span><br><span style="color:#6B7280;font-size:10px;">Dampak besar, butuh tender & cairkan dana yayasan.</span></div>
+          </div>
+          <div style="grid-row:2;grid-column:2;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:14px;">
+            <div style="font-size:10px;font-weight:700;color:#D97706;margin-bottom:10px;">TUGAS SAMPINGAN (Delegasikan)</div>
+            <div class="reko-card" style="border:0.5px solid #FCD34D;padding:10px;font-size:11px;margin-bottom:0;"><span style="font-weight:600;color:#92400E;">Cetak Spanduk PPDB Gelombang 2</span><br><span style="color:#6B7280;font-size:10px;">Bisa diserahkan ke staf tata usaha.</span></div>
+          </div>
+          <div style="grid-row:2;grid-column:3;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:14px;">
+            <div style="font-size:10px;font-weight:700;color:#B91C1C;margin-bottom:10px;">HINDARI (Tolak / Evaluasi Ulang)</div>
+            <div class="reko-card" style="border:0.5px solid #FCA5A5;padding:10px;font-size:11px;margin-bottom:0;"><span style="font-weight:600;color:#7F1D1D;">Renovasi Total Gerbang Utama</span><br><span style="color:#6B7280;font-size:10px;">Biaya 80jt, tidak berdampak pada KBM.</span></div>
+          </div>
+          <div style="grid-row:3;grid-column:2/4;text-align:center;font-size:10px;font-weight:600;color:#6B7280;padding-top:4px;letter-spacing:.05em;">Usaha (Biaya / Waktu) →</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== PPDB & SISWA ===== -->
+    <div class="page" id="halaman-siswa">
+      <div style="margin-bottom:20px;"><div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Data PPDB & Siswa</div><div style="font-size:13px;color:#059669;">Pantau pergerakan pendaftaran dan status kuota siswa baru.</div></div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Total Pendaftar</div><div class="kpi-val">450</div><div class="kpi-sub">akun dibuat</div></div>
+        <div class="kpi"><div class="kpi-label">Lulus Seleksi Berkas</div><div class="kpi-val" style="color:#059669;">312</div><div class="kpi-sub">69% dari total</div></div>
+        <div class="kpi"><div class="kpi-label">Daftar Ulang</div><div class="kpi-val" style="color:#059669;">218</div><div class="kpi-sub">dari target 250</div></div>
+        <div class="kpi"><div class="kpi-label">Slot Tersisa</div><div class="kpi-val" style="color:#D97706;">32</div><div class="kpi-sub">Jalur Tahfidz & Prestasi</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+        <div class="card">
+          <div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>Corong Pendaftaran (Funnel)</div>
+          <canvas id="chart-funnel" height="160"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Distribusi per Jalur</div>
+          <canvas id="chart-jalur" height="160"></canvas>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Status Kuota per Jalur</div>
+        <div class="mini-grid" style="grid-template-columns:1fr 1fr 1fr;">
+          <div class="mini-card"><div style="font-size:11px;font-weight:600;color:#064E3B;margin-bottom:4px;">Jalur Tahfidz</div><div style="font-size:18px;font-weight:700;color:#059669;margin-bottom:8px;">45 / 50 <span style="font-size:10px;font-weight:normal;color:#6B7280;">siswa</span></div><div class="trend-bar"><div class="trend-fill" style="width:90%;background:#059669;"></div></div></div>
+          <div class="mini-card"><div style="font-size:11px;font-weight:600;color:#064E3B;margin-bottom:4px;">Jalur Prestasi</div><div style="font-size:18px;font-weight:700;color:#D97706;margin-bottom:8px;">23 / 50 <span style="font-size:10px;font-weight:normal;color:#6B7280;">siswa</span></div><div class="trend-bar"><div class="trend-fill" style="width:46%;background:#F59E0B;"></div></div></div>
+          <div class="mini-card"><div style="font-size:11px;font-weight:600;color:#064E3B;margin-bottom:4px;">Jalur Reguler</div><div style="font-size:18px;font-weight:700;color:#B91C1C;margin-bottom:8px;">150 / 150 <span style="font-size:10px;font-weight:normal;color:#6B7280;">siswa</span></div><div class="trend-bar"><div class="trend-fill" style="width:100%;background:#EF4444;"></div></div><div style="font-size:9px;color:#DC2626;margin-top:4px;">*Kuota penuh</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span style="color:#B91C1C;">Peringatan Dini — Action Needed</span></div>
+        <table>
+          <thead><tr><th>Nama Pendaftar</th><th>Jalur</th><th>Status Terkendala</th><th>Aksi Panitia</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:600;color:#064E3B;">Ahmad Fauzi</td><td><span class="badge b-teal">Tahfidz</span></td><td style="color:#92400E;">Sertifikat Hafalan Kurang Jelas</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('WA dikirim ke Ortu Ahmad Fauzi')">Hubungi Ortu</button></td></tr>
+            <tr><td style="font-weight:600;color:#064E3B;">Siti Aisyah</td><td><span class="badge b-amber">Prestasi</span></td><td style="color:#92400E;">Belum Bayar Formulir (H-1)</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('Reminder WA terkirim ke Siti Aisyah')">Kirim Reminder WA</button></td></tr>
+            <tr><td style="font-weight:600;color:#064E3B;">Budi Santoso</td><td><span class="badge b-blue">Reguler</span></td><td style="color:#92400E;">Cabut Berkas (Pindah Kota)</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('Proses refund diajukan')">Proses Refund</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== KURIKULUM & KBM ===== -->
+    <div class="page" id="halaman-kurikulum">
+      <div style="margin-bottom:20px;"><div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Kurikulum & KBM</div><div style="font-size:13px;color:#059669;">Monitor efektivitas pembelajaran, kehadiran, dan capaian kurikulum semester ini.</div></div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Kehadiran Guru</div><div class="kpi-val" style="color:#059669;">97%</div><div class="kpi-sub">↑ stabil minggu ini</div></div>
+        <div class="kpi"><div class="kpi-label">Rata-rata Nilai UTS</div><div class="kpi-val">78.4</div><div class="kpi-sub">↓ -2 poin vs semester lalu</div></div>
+        <div class="kpi"><div class="kpi-label">Pertemuan KBM</div><div class="kpi-val" style="color:#059669;">92%</div><div class="kpi-sub">dari total jam terjadwal</div></div>
+        <div class="kpi"><div class="kpi-label">RPP Dikumpul</div><div class="kpi-val" style="color:#D97706;">84%</div><div class="kpi-sub">18 guru belum kumpul</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+        <div class="card">
+          <div class="card-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Tren Nilai Rata-rata per Mapel</div>
+          <canvas id="chart-mapel" height="150"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/></svg>Kehadiran Siswa per Kelas</div>
+          <canvas id="chart-kehadiran" height="150"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/></svg>Rekap Kehadiran & Nilai per Kelas</div>
+        <table>
+          <thead><tr><th>Kelas</th><th>Wali Kelas</th><th>Kehadiran Siswa</th><th>Rata-rata Nilai UTS</th><th>Status KBM</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:600;">X-A</td><td>Ust. Mahmud, S.Pd</td><td>98%</td><td style="color:#059669;font-weight:600;">82.1</td><td><span class="badge b-green">Baik</span></td></tr>
+            <tr><td style="font-weight:600;">X-B</td><td>Ust. Farid, S.Pd</td><td>95%</td><td style="font-weight:600;">79.3</td><td><span class="badge b-green">Baik</span></td></tr>
+            <tr><td style="font-weight:600;">XI-IPA</td><td>Ust. Azhar, M.Pd</td><td>91%</td><td style="color:#D97706;font-weight:600;">74.6</td><td><span class="badge b-amber">Perhatian</span></td></tr>
+            <tr><td style="font-weight:600;">XI-IPS</td><td>Ust. Hendra, S.Pd</td><td>89%</td><td style="color:#D97706;font-weight:600;">72.8</td><td><span class="badge b-amber">Perhatian</span></td></tr>
+            <tr><td style="font-weight:600;">XII-IPA</td><td>Ust. Ridwan, M.Pd</td><td>96%</td><td style="font-weight:600;">80.5</td><td><span class="badge b-green">Baik</span></td></tr>
+            <tr><td style="font-weight:600;">XII-IPS</td><td>Ust. Samsul, S.Pd</td><td>93%</td><td style="color:#B91C1C;font-weight:600;">69.2</td><td><span class="badge b-red">Perlu Intervensi</span></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px;background:#FEF3C7;border-radius:8px;padding:12px;font-size:11px;color:#92400E;"><strong>⚠ Perhatian:</strong> Kelas XII-IPS menunjukkan penurunan nilai signifikan. Disarankan rapat koordinasi Waka Kurikulum + Wali Kelas segera. <button class="btn-primary" style="display:inline;padding:4px 10px;margin-left:8px;font-size:10px;flex:none;" onclick="toast('Rapat XII-IPS dijadwalkan')">Jadwalkan Rapat</button></div>
+      </div>
+    </div>
+
+    <!-- ===== KEUANGAN ===== -->
+    <div class="page" id="halaman-keuangan">
+      <div style="margin-bottom:20px;"><div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Keuangan</div><div style="font-size:13px;color:#059669;">Pantau realisasi anggaran, penerimaan SPP, dan kesehatan kas sekolah.</div></div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Serapan Anggaran</div><div class="kpi-val">68%</div><div class="kpi-sub">dari total RKAS Q1</div></div>
+        <div class="kpi"><div class="kpi-label">Penerimaan SPP</div><div class="kpi-val" style="color:#059669;">Rp 412 jt</div><div class="kpi-sub">dari target Rp 480 jt</div></div>
+        <div class="kpi"><div class="kpi-label">Tunggakan SPP</div><div class="kpi-val" style="color:#B91C1C;">38</div><div class="kpi-sub">siswa, Rp 68 jt outstanding</div></div>
+        <div class="kpi"><div class="kpi-label">Kas Operasional</div><div class="kpi-val" style="color:#059669;">Rp 124 jt</div><div class="kpi-sub">aman s/d akhir April</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:18px;">
+        <div class="card">
+          <div class="card-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Tren Penerimaan SPP 6 Bulan</div>
+          <canvas id="chart-spp" height="150"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Komposisi Pengeluaran</div>
+          <canvas id="chart-pengeluaran" height="150"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>Realisasi Anggaran per Program</div>
+        <div style="margin-bottom:14px;">
+          <div class="progress-row"><div class="progress-label-row"><span style="font-size:12px;font-weight:500;color:#064E3B;">Program Tahfidz Al-Qur'an</span><span style="font-size:11px;color:#059669;font-weight:600;">82% · Rp 41 jt / Rp 50 jt</span></div><div class="progress-track"><div class="progress-fill" style="width:82%;background:#059669;"></div></div></div>
+          <div class="progress-row"><div class="progress-label-row"><span style="font-size:12px;font-weight:500;color:#064E3B;">Operasional KBM & ATK</span><span style="font-size:11px;color:#059669;font-weight:600;">74% · Rp 37 jt / Rp 50 jt</span></div><div class="progress-track"><div class="progress-fill" style="width:74%;background:#059669;"></div></div></div>
+          <div class="progress-row"><div class="progress-label-row"><span style="font-size:12px;font-weight:500;color:#064E3B;">Lab & Fasilitas IT</span><span style="font-size:11px;color:#D97706;font-weight:600;">35% · Rp 14 jt / Rp 40 jt ⚠</span></div><div class="progress-track"><div class="progress-fill" style="width:35%;background:#F59E0B;"></div></div></div>
+          <div class="progress-row"><div class="progress-label-row"><span style="font-size:12px;font-weight:500;color:#064E3B;">Pengembangan Guru (Diklat)</span><span style="font-size:11px;color:#D97706;font-weight:600;">50% · Rp 15 jt / Rp 30 jt</span></div><div class="progress-track"><div class="progress-fill" style="width:50%;background:#F59E0B;"></div></div></div>
+          <div class="progress-row"><div class="progress-label-row"><span style="font-size:12px;font-weight:500;color:#064E3B;">Kegiatan Ekstrakurikuler</span><span style="font-size:11px;color:#6B7280;font-weight:600;">60% · Rp 18 jt / Rp 30 jt</span></div><div class="progress-track"><div class="progress-fill" style="width:60%;background:#0D9488;"></div></div></div>
+          <div class="progress-row" style="margin-bottom:0;"><div class="progress-label-row"><span style="font-size:12px;font-weight:500;color:#064E3B;">Sarana Prasarana Umum</span><span style="font-size:11px;color:#6B7280;font-weight:600;">90% · Rp 27 jt / Rp 30 jt</span></div><div class="progress-track"><div class="progress-fill" style="width:90%;background:#059669;"></div></div></div>
+        </div>
+        <div style="background:#FEF2F2;border-radius:8px;padding:12px;font-size:11px;color:#B91C1C;">⚠ Serapan Lab IT hanya 35% — pengajuan Q2 harus segera diajukan sebelum deadline 11 April. <button class="btn-primary" style="display:inline;padding:4px 10px;margin-left:8px;font-size:10px;flex:none;" onclick="toast('Memo pengajuan anggaran Lab IT dibuat')">Buat Memo</button></div>
+      </div>
+    </div>
+
+    <!-- ===== TAHFIDZ ===== -->
+    <div class="page" id="halaman-tahfidz">
+      <div style="margin-bottom:20px;"><div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Program Tahfidz Al-Qur'an</div><div style="font-size:13px;color:#059669;">Pantau capaian hafalan siswa, setoran harian, dan perkembangan per juz.</div></div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">Siswa Capai Target</div><div class="kpi-val" style="color:#059669;">94%</div><div class="kpi-sub">dari 218 total siswa</div></div>
+        <div class="kpi"><div class="kpi-label">Setoran Hari Ini</div><div class="kpi-val">187</div><div class="kpi-sub">siswa sudah setor pagi ini</div></div>
+        <div class="kpi"><div class="kpi-label">Rata-rata Capaian</div><div class="kpi-val" style="color:#059669;">4.2 Juz</div><div class="kpi-sub">per siswa semester ini</div></div>
+        <div class="kpi"><div class="kpi-label">Siswa Perlu Perhatian</div><div class="kpi-val" style="color:#D97706;">13</div><div class="kpi-sub">di bawah target juz</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+        <div class="card">
+          <div class="card-title">📖 Distribusi Capaian Juz Siswa</div>
+          <canvas id="chart-juz" height="150"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-title">📈 Tren Setoran Harian (2 Minggu)</div>
+          <canvas id="chart-setoran" height="150"></canvas>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:18px;">
+        <div class="card-title">🗺️ Peta Progres Juz (Juz 1–30)</div>
+        <div style="font-size:11px;color:#6B7280;margin-bottom:12px;">Klik juz untuk detail. Warna hijau = mayoritas siswa sudah hafal, kuning = sebagian, abu = belum dimulai.</div>
+        <div class="juz-grid" id="juz-grid"></div>
+        <div style="display:flex;gap:12px;margin-top:12px;font-size:10px;color:#6B7280;align-items:center;">
+          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#059669;border-radius:2px;display:inline-block;"></span>&gt;70% siswa hafal</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#FEF3C7;border:0.5px solid #FCD34D;border-radius:2px;display:inline-block;"></span>30–70% siswa</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;background:#F0FDF4;border:0.5px solid #D1FAE5;border-radius:2px;display:inline-block;"></span>&lt;30% siswa</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#D97706;">⚠️ Siswa di Bawah Target — Perlu Bimbingan Intensif</div>
+        <table>
+          <thead><tr><th>Nama Siswa</th><th>Kelas</th><th>Target Juz</th><th>Capaian Saat Ini</th><th>Tindakan</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:600;">Dani Kurniawan</td><td>XI-IPA</td><td>5 Juz</td><td style="color:#B91C1C;font-weight:600;">2 Juz</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('Bimbingan intensif Dani dijadwalkan')">Jadwalkan Bimbingan</button></td></tr>
+            <tr><td style="font-weight:600;">Rini Septiani</td><td>X-B</td><td>3 Juz</td><td style="color:#D97706;font-weight:600;">1.5 Juz</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('Notifikasi dikirim ke wali kelas')">Notif Wali Kelas</button></td></tr>
+            <tr><td style="font-weight:600;">Wahyu Pratama</td><td>XII-IPS</td><td>7 Juz</td><td style="color:#B91C1C;font-weight:600;">4 Juz</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('Orang tua Wahyu dihubungi')">Hubungi Ortu</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ===== LAB IT ===== -->
+    <div class="page" id="halaman-lab">
+      <div style="margin-bottom:20px;"><div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Lab & Fasilitas IT</div><div style="font-size:13px;color:#059669;">Monitor kondisi perangkat, jaringan, dan jadwal penggunaan lab komputer.</div></div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kpi-label">PC Berfungsi Normal</div><div class="kpi-val" style="color:#B91C1C;">41%</div><div class="kpi-sub">17 dari 41 unit OK</div></div>
+        <div class="kpi"><div class="kpi-label">Kecepatan Internet</div><div class="kpi-val" style="color:#D97706;">8 Mbps</div><div class="kpi-sub">dari kontrak 20 Mbps</div></div>
+        <div class="kpi"><div class="kpi-label">Utilitas Lab Hari Ini</div><div class="kpi-val" style="color:#059669;">6 / 8</div><div class="kpi-sub">sesi terjadwal hari ini</div></div>
+        <div class="kpi"><div class="kpi-label">Tiket Gangguan Terbuka</div><div class="kpi-val" style="color:#B91C1C;">9</div><div class="kpi-sub">menunggu teknisi</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+        <div class="card">
+          <div class="card-title">🖥️ Status Unit PC (41 Unit)</div>
+          <canvas id="chart-pc" height="150"></canvas>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;">
+            <div style="text-align:center;background:#ECFDF5;border-radius:8px;padding:10px;"><div style="font-size:18px;font-weight:700;color:#059669;">17</div><div style="font-size:10px;color:#6B7280;">Normal</div></div>
+            <div style="text-align:center;background:#FFFBEB;border-radius:8px;padding:10px;"><div style="font-size:18px;font-weight:700;color:#D97706;">8</div><div style="font-size:10px;color:#6B7280;">Maintenance</div></div>
+            <div style="text-align:center;background:#FEF2F2;border-radius:8px;padding:10px;"><div style="font-size:18px;font-weight:700;color:#B91C1C;">16</div><div style="font-size:10px;color:#6B7280;">Rusak/Mati</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📅 Jadwal Penggunaan Lab Hari Ini</div>
+          <div class="agenda-item"><div class="agenda-time">07.30</div><div><div class="agenda-title">Informatika — X-A (Pak Rudi)</div><div class="agenda-sub">12 PC tersedia, 8 rusak perlu pengganti</div></div></div>
+          <div class="agenda-item"><div class="agenda-time">09.00</div><div><div class="agenda-title">Informatika — XI-IPA (Pak Rudi)</div><div class="agenda-sub">Sesi selesai normal</div></div></div>
+          <div class="agenda-item"><div class="agenda-time">11.00</div><div><div class="agenda-title">Desain Grafis — X-B (Bu Sari)</div><div class="agenda-sub">⚠ PC Corel Draw tidak bisa diinstall</div></div></div>
+          <div class="agenda-item"><div class="agenda-time">13.00</div><div><div class="agenda-title">Pemrog. Dasar — XII-IPA (Pak Danu)</div><div class="agenda-sub">Jadwal OK</div></div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:#B91C1C;">🔴 Tiket Gangguan Aktif</div>
+        <table>
+          <thead><tr><th>No</th><th>Jenis Gangguan</th><th>Dilaporkan</th><th>Prioritas</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td>#001</td><td>PC unit 14–18 tidak menyala</td><td>Ust. Rudi</td><td><span class="badge b-red">Tinggi</span></td><td>Menunggu Teknisi</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('Teknisi eksternal dihubungi')">Hubungi Teknisi</button></td></tr>
+            <tr><td>#002</td><td>Kecepatan internet &lt; 10 Mbps</td><td>Tata Usaha</td><td><span class="badge b-red">Tinggi</span></td><td>Lapor ISP</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('Komplain ke ISP dikirim')">Eskalasi ISP</button></td></tr>
+            <tr><td>#003</td><td>Proyektor Lab tidak terhubung</td><td>Bu Sari</td><td><span class="badge b-amber">Sedang</span></td><td>Cek Kabel HDMI</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('Tiket ditutup')">Tandai Selesai</button></td></tr>
+            <tr><td>#004</td><td>AC Lab tidak dingin optimal</td><td>Ust. Danu</td><td><span class="badge b-amber">Sedang</span></td><td>Antre Service</td><td><button class="btn-ghost" style="padding:4px 10px;font-size:10px;" onclick="toast('Service AC dijadwalkan')">Jadwalkan</button></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px;background:#ECFDF5;border-radius:8px;padding:12px;font-size:11px;color:#065F46;">✅ Rekomendasi: Ajukan pengadaan 20 unit PC baru ke anggaran Q2 sebelum deadline 11 April untuk memenuhi kebutuhan KBM semester depan. <button class="btn-primary" style="display:inline;padding:4px 10px;margin-left:8px;font-size:10px;flex:none;" onclick="toast('Proposal pengadaan PC dibuat')">Buat Proposal</button></div>
+      </div>
+    </div>
+
+    <!-- ===== EVALUASI BULANAN ===== -->
+    <div class="page" id="halaman-evaluasi">
+      <div style="margin-bottom:20px;"><div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Evaluasi Bulanan — April 2026</div><div style="font-size:13px;color:#059669;">Ringkasan capaian, kendala, dan rencana tindak lanjut bulan ini.</div></div>
+      <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;" id="filter-bulan">
+        <span class="chip active-chip" onclick="filterBulan(this)">April 2026</span>
+        <span class="chip" onclick="filterBulan(this)">Maret 2026</span>
+        <span class="chip" onclick="filterBulan(this)">Februari 2026</span>
+        <span class="chip" onclick="filterBulan(this)">Januari 2026</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;">
+        <div class="card">
+          <div class="card-title">✅ Capaian Positif Bulan Ini</div>
+          <div class="status-row"><div><div style="font-size:12px;font-weight:600;color:#064E3B;">Kehadiran guru stabil 97%</div><div style="font-size:11px;color:#6B7280;">Meningkat dari 94% bulan lalu</div></div><span class="badge b-green">✓ Tercapai</span></div>
+          <div class="status-row"><div><div style="font-size:12px;font-weight:600;color:#064E3B;">Target tahfidz 94% siswa</div><div style="font-size:11px;color:#6B7280;">Melampaui target 90%</div></div><span class="badge b-green">✓ Tercapai</span></div>
+          <div class="status-row"><div><div style="font-size:12px;font-weight:600;color:#064E3B;">PPDB gelombang 1 tuntas</div><div style="font-size:11px;color:#6B7280;">218 dari 200 target gelombang 1</div></div><span class="badge b-green">✓ Tercapai</span></div>
+          <div class="status-row"><div><div style="font-size:12px;font-weight:600;color:#064E3B;">Dokumen akreditasi 80% siap</div><div style="font-size:11px;color:#6B7280;">Target dokumen Q1 tercapai</div></div><span class="badge b-green">✓ Tercapai</span></div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚠️ Kendala & Perlu Tindak Lanjut</div>
+          <div class="status-row"><div><div style="font-size:12px;font-weight:600;color:#B91C1C;">Lab IT kapasitas turun 41%</div><div style="font-size:11px;color:#6B7280;">Berdampak ke nilai UTS Informatika</div></div><span class="badge b-red">Kritis</span></div>
+          <div class="status-row"><div><div style="font-size:12px;font-weight:600;color:#B91C1C;">31 komplain ortu aktif</div><div style="font-size:11px;color:#6B7280;">Meningkat dari 12 komplain bulan lalu</div></div><span class="badge b-red">Kritis</span></div>
+          <div class="status-row"><div><div style="font-size:12px;font-weight:600;color:#D97706;">Nilai UTS turun -2 poin</div><div style="font-size:11px;color:#6B7280;">Khususnya XII-IPS perlu intervensi</div></div><span class="badge b-amber">Perhatian</span></div>
+          <div class="status-row"><div><div style="font-size:12px;font-weight:600;color:#D97706;">18 RPP belum dikumpul</div><div style="font-size:11px;color:#6B7280;">Tenggat 14 April, reminder sudah dikirim</div></div><span class="badge b-amber">Proses</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Perbandingan KPI Bulanan</div>
+        <canvas id="chart-kpi-bulanan" height="160"></canvas>
+      </div>
+      <div class="card" style="margin-top:18px;">
+        <div class="card-title">📝 Rencana Tindak Lanjut (RTL) April 2026</div>
+        <table>
+          <thead><tr><th>Program</th><th>Rencana Aksi</th><th>PIC</th><th>Target Selesai</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td style="font-weight:600;">Lab IT</td><td>Pengadaan router baru + PC 5 unit darurat</td><td>Waka Sarpras</td><td>15 April</td><td><span class="badge b-amber">Proses</span></td></tr>
+            <tr><td style="font-weight:600;">Komplain Ortu</td><td>Rapat mediasi + tim respons cepat</td><td>Waka Kesiswaan</td><td>12 April</td><td><span class="badge b-red">Urgen</span></td></tr>
+            <tr><td style="font-weight:600;">Kurikulum</td><td>Intervensi khusus XII-IPS + remedial</td><td>Waka Kurikulum</td><td>20 April</td><td><span class="badge b-blue">Direncanakan</span></td></tr>
+            <tr><td style="font-weight:600;">PPDB Gel.2</td><td>Promosi ke 5 SMP target + open house</td><td>Tim PPDB</td><td>30 April</td><td><span class="badge b-amber">Proses</span></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:12px;display:flex;gap:8px;"><button class="btn-primary" onclick="toast('Laporan evaluasi bulan April diekspor')">Export Laporan PDF</button><button class="btn-ghost" onclick="toast('RTL dikirim ke seluruh Waka')">Kirim RTL ke Waka</button></div>
+      </div>
+    </div>
+
+    <!-- ===== RIWAYAT KEPUTUSAN ===== -->
+    <div class="page" id="halaman-riwayat">
+      <div style="margin-bottom:20px;"><div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Riwayat Keputusan Strategis</div><div style="font-size:13px;color:#059669;">Log aktivitas dan landasan data untuk setiap keputusan eksekutif yang diambil.</div></div>
+      <div class="card">
+        <div class="timeline">
+          <div class="tl-item"><div class="tl-dot" style="background:#059669;"></div><div class="tl-date">HARI INI • 09:15 WIB</div><div class="tl-card"><div class="tl-title">Eskalasi 31 Komplain PPDB ke Waka Kesiswaan</div><div class="tl-desc"><strong>Landasan Data:</strong> Batas waktu respons 3x24 jam hampir habis. Risiko eskalasi ke media sosial tinggi jika diabaikan.</div><div class="tl-tags"><span class="badge b-teal">PIC: Waka Kesiswaan</span><span style="font-size:10px;color:#6B7280;">Status: Dalam Proses Tindak Lanjut</span></div></div></div>
+          <div class="tl-item"><div class="tl-dot" style="background:#059669;"></div><div class="tl-date">KEMARIN • 14:30 WIB</div><div class="tl-card"><div class="tl-title">Menyetujui Upgrade Kapasitas Lab IT (Anggaran Q2)</div><div class="tl-desc"><strong>Landasan Data:</strong> Kapasitas fungsional Lab tersisa 41%, berdampak langsung pada nilai rata-rata UTS mapel Informatika yang turun -2 poin.</div><div class="tl-tags"><span class="badge b-teal">PIC: Waka Sarpras & Bendahara</span><span style="font-size:10px;color:#6B7280;">Status: Disetujui (Menunggu Pencairan)</span></div></div></div>
+          <div class="tl-item" style="margin-bottom:0;"><div class="tl-dot" style="background:#9CA3AF;"></div><div class="tl-date">4 APRIL 2026 • 10:00 WIB</div><div class="tl-card old"><div class="tl-title" style="color:#4B5563;">Menolak Usulan Renovasi Gerbang Utama</div><div class="tl-desc"><strong>Landasan Data:</strong> Estimasi biaya Rp 80 Juta. Masuk kategori Usaha Tinggi namun Dampak KBM Rendah menurut matriks eksekusi.</div><div class="tl-tags"><span class="badge" style="background:#F3F4F6;color:#4B5563;">Keputusan: Ditolak / Evaluasi Ulang</span></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== NOTIFIKASI ===== -->
+    <div class="page" id="halaman-notif">
+      <div style="margin-bottom:20px;"><div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Pusat Notifikasi</div><div style="font-size:13px;color:#059669;">Semua peringatan, pengingat, dan update sistem dalam satu tempat.</div></div>
+      <div style="display:flex;gap:8px;margin-bottom:18px;">
+        <span class="chip active-chip" id="filter-semua" onclick="filterNotif('semua')">Semua (7)</span>
+        <span class="chip" id="filter-kritis" onclick="filterNotif('kritis')">🔴 Kritis (2)</span>
+        <span class="chip" id="filter-penting" onclick="filterNotif('penting')">🟡 Penting (3)</span>
+        <span class="chip" id="filter-info" onclick="filterNotif('info')">🔵 Info (2)</span>
+      </div>
+      <div class="card" id="daftar-notif">
+        <div class="notif-item" style="padding:14px;border-bottom:0.5px solid #F0FDF4;align-items:flex-start;" data-type="kritis"><div style="font-size:16px;">🔴</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#064E3B;margin-bottom:3px;">31 komplain orang tua belum direspons</div><div style="font-size:11px;color:#6B7280;margin-bottom:6px;">Batas waktu 3x24 jam hampir habis. Risiko viral media sosial tinggi.</div><div style="display:flex;gap:8px;align-items:center;"><span style="font-size:10px;color:#9CA3AF;">Hari ini, 06.15</span><button class="btn-primary" style="padding:4px 12px;font-size:10px;flex:none;" onclick="toast('Eskalasi ke Waka Kesiswaan dilakukan')">Eskalasi Sekarang</button></div></div></div>
+        <div class="notif-item" style="padding:14px;border-bottom:0.5px solid #F0FDF4;align-items:flex-start;" data-type="kritis"><div style="font-size:16px;">🔴</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#064E3B;margin-bottom:3px;">Lab IT: 16 unit PC rusak — KBM terganggu</div><div style="font-size:11px;color:#6B7280;margin-bottom:6px;">Kelas X-A & XI-IPA terpaksa bergantian. Kapasitas efektif tinggal 41%.</div><div style="display:flex;gap:8px;align-items:center;"><span style="font-size:10px;color:#9CA3AF;">Kemarin, 14.00</span><button class="btn-ghost" style="padding:4px 12px;font-size:10px;flex:none;" onclick="bukaHalaman('lab')">Lihat Lab IT ↗</button></div></div></div>
+        <div class="notif-item" style="padding:14px;border-bottom:0.5px solid #F0FDF4;align-items:flex-start;" data-type="penting"><div style="font-size:16px;">🟡</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#064E3B;margin-bottom:3px;">Deadline pengajuan anggaran Lab IT Q2 — 11 April</div><div style="font-size:11px;color:#6B7280;margin-bottom:6px;">Bendahara menunggu dokumen RAB dari Waka Sarpras.</div><div style="display:flex;gap:8px;align-items:center;"><span style="font-size:10px;color:#9CA3AF;">Kemarin, 16.40</span><button class="btn-ghost" style="padding:4px 12px;font-size:10px;flex:none;" onclick="toast('Reminder dikirim ke Waka Sarpras')">Kirim Reminder</button></div></div></div>
+        <div class="notif-item" style="padding:14px;border-bottom:0.5px solid #F0FDF4;align-items:flex-start;" data-type="penting"><div style="font-size:16px;">🟡</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#064E3B;margin-bottom:3px;">18 guru belum mengumpulkan RPP</div><div style="font-size:11px;color:#6B7280;margin-bottom:6px;">Tenggat 14 April. Perlu reminder dari Waka Kurikulum.</div><div style="display:flex;gap:8px;align-items:center;"><span style="font-size:10px;color:#9CA3AF;">Kemarin, 09.00</span><button class="btn-ghost" style="padding:4px 12px;font-size:10px;flex:none;" onclick="toast('Broadcast reminder RPP dikirim')">Broadcast Reminder</button></div></div></div>
+        <div class="notif-item" style="padding:14px;border-bottom:0.5px solid #F0FDF4;align-items:flex-start;" data-type="penting"><div style="font-size:16px;">🟡</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#064E3B;margin-bottom:3px;">3 dokumen akreditasi menunggu tanda tangan</div><div style="font-size:11px;color:#6B7280;margin-bottom:6px;">Tim BAN-S/M akan datang besok pukul 11.00.</div><div style="display:flex;gap:8px;align-items:center;"><span style="font-size:10px;color:#9CA3AF;">Kemarin, 14.00</span><button class="btn-primary" style="padding:4px 12px;font-size:10px;flex:none;" onclick="toast('Dokumen akreditasi ditandatangani')">Tandatangani</button></div></div></div>
+        <div class="notif-item" style="padding:14px;border-bottom:0.5px solid #F0FDF4;align-items:flex-start;" data-type="info"><div style="font-size:16px;">🔵</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#064E3B;margin-bottom:3px;">Laporan Tahfidz Maret telah diverifikasi</div><div style="font-size:11px;color:#6B7280;margin-bottom:6px;">Koordinator program telah menandatangani dan mengarsipkan laporan.</div><div style="font-size:10px;color:#9CA3AF;">2 hari lalu</div></div></div>
+        <div class="notif-item" style="padding:14px;align-items:flex-start;" data-type="info"><div style="font-size:16px;">🔵</div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#064E3B;margin-bottom:3px;">PPDB Gelombang 1 resmi ditutup</div><div style="font-size:11px;color:#6B7280;margin-bottom:6px;">218 siswa terdaftar. Gelombang 2 dibuka mulai 10 April.</div><div style="font-size:10px;color:#9CA3AF;">3 hari lalu</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- end main -->
+</div><!-- end app -->
+
+<!-- MODAL PROFIL -->
+<div class="modal-overlay" id="modal-profil">
+  <div class="modal">
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+      <div style="width:48px;height:48px;background:#34D399;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#064E3B;">US</div>
+      <div><div class="modal-title" style="margin-bottom:0;">Ustadz Syaifulloh, M.Pd</div><div style="font-size:12px;color:#059669;">Kepala Sekolah — SMA IT Prototype</div></div>
+    </div>
+    <div style="font-size:12px;color:#374151;margin-bottom:16px;line-height:1.6;">Login terakhir: Kamis, 9 April 2026 pukul 07.12 WIB<br>Akses: Administrator Penuh</div>
+    <div class="modal-actions"><button class="btn-ghost" onclick="tutupModal('profil')">Tutup</button><button class="btn-primary" onclick="toast('Sedang logout...');tutupModal('profil')">Logout</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#064E3B;color:white;padding:10px 20px;border-radius:8px;font-size:12px;font-weight:600;transition:transform .3s ease;z-index:999;pointer-events:none;">✓ Aksi berhasil</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const PAGES = ['dashboard','siswa','kurikulum','keuangan','tahfidz','lab','evaluasi','riwayat','notif'];
+
+function bukaHalaman(halaman) {
+  PAGES.forEach(p => {
+    document.getElementById('halaman-' + p).classList.remove('active');
+    const m = document.getElementById('menu-' + p);
+    if (m) m.classList.remove('active');
+  });
+  document.getElementById('halaman-' + halaman).classList.add('active');
+  const m = document.getElementById('menu-' + halaman);
+  if (m) m.classList.add('active');
+  // Hide notif dot when opened
+  if (halaman === 'notif') document.getElementById('notif-dot').style.display = 'none';
+  // Draw charts lazily
+  setTimeout(() => drawChartsFor(halaman), 50);
+}
+
+const drawnCharts = {};
+function drawChartsFor(page) {
+  if (drawnCharts[page]) return;
+  drawnCharts[page] = true;
+
+  const grn = '#059669', amber = '#F59E0B', red = '#EF4444', teal = '#0D9488', blue = '#3B82F6';
+  const soft = (hex, a=.15) => hex + Math.round(a*255).toString(16).padStart(2,'0');
+
+  if (page === 'dashboard') {
+    // PPDB Line
+    new Chart(document.getElementById('chart-ppdb'), { type:'line', data:{
+      labels:['Okt','Nov','Des','Jan','Feb','Mar','Apr'],
+      datasets:[{label:'Pendaftar',data:[40,65,90,130,160,195,218],borderColor:grn,backgroundColor:soft(grn),fill:true,tension:.4,pointRadius:3}]
+    }, options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#F0FDF4'},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:10}}}}}});
+
+    // Nilai Donut
+    new Chart(document.getElementById('chart-nilai'), { type:'doughnut', data:{
+      labels:['A (≥85)','B (75–84)','C (65–74)','D (<65)'],
+      datasets:[{data:[18,45,28,9],backgroundColor:[grn,teal,amber,red],borderWidth:0}]
+    }, options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10},padding:8}}}}});
+
+    // Anggaran Bar
+    new Chart(document.getElementById('chart-anggaran'), { type:'bar', data:{
+      labels:['Tahfidz','KBM','Lab IT','Diklat','Ekskul','Sarpras'],
+      datasets:[{label:'Terserap',data:[82,74,35,50,60,90],backgroundColor:[grn,grn,red,amber,teal,grn]}]
+    }, options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{font:{size:9},callback:v=>v+'%'},grid:{color:'#F0FDF4'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+  }
+
+  if (page === 'siswa') {
+    // Funnel Bar
+    new Chart(document.getElementById('chart-funnel'), { type:'bar', data:{
+      labels:['Buat Akun','Lulus Berkas','Wawancara','Daftar Ulang'],
+      datasets:[{data:[450,312,245,218],backgroundColor:[soft(grn,.3),soft(grn,.5),soft(grn,.7),grn]}]
+    }, options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#F0FDF4'},ticks:{font:{size:10}}},y:{grid:{display:false},ticks:{font:{size:10}}}}}});
+
+    // Jalur Pie
+    new Chart(document.getElementById('chart-jalur'), { type:'pie', data:{
+      labels:['Tahfidz (45)','Prestasi (23)','Reguler (150)'],
+      datasets:[{data:[45,23,150],backgroundColor:[grn,teal,blue],borderWidth:0}]
+    }, options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10},padding:8}}}}});
+  }
+
+  if (page === 'kurikulum') {
+    new Chart(document.getElementById('chart-mapel'), { type:'bar', data:{
+      labels:['Mat','B.Ind','B.Ing','IPA','IPS','Info','PAI'],
+      datasets:[
+        {label:'Sem ini',data:[75,80,77,72,74,68,88],backgroundColor:teal},
+        {label:'Sem lalu',data:[77,81,79,74,76,73,86],backgroundColor:soft(grn,.4)}
+      ]
+    }, options:{responsive:true,plugins:{legend:{labels:{font:{size:10}}}},scales:{y:{beginAtZero:false,min:60,ticks:{font:{size:9}},grid:{color:'#F0FDF4'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+
+    new Chart(document.getElementById('chart-kehadiran'), { type:'bar', data:{
+      labels:['X-A','X-B','XI-IPA','XI-IPS','XII-IPA','XII-IPS'],
+      datasets:[{data:[98,95,91,89,96,93],backgroundColor:[grn,grn,amber,red,grn,amber]}]
+    }, options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:80,max:100,ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'#F0FDF4'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+  }
+
+  if (page === 'keuangan') {
+    new Chart(document.getElementById('chart-spp'), { type:'line', data:{
+      labels:['Okt','Nov','Des','Jan','Feb','Mar','Apr'],
+      datasets:[
+        {label:'Penerimaan (jt)',data:[60,55,70,72,68,75,72],borderColor:grn,backgroundColor:soft(grn),fill:true,tension:.4},
+        {label:'Target (jt)',data:[80,80,80,80,80,80,80],borderColor:amber,borderDash:[4,4],fill:false,pointRadius:0}
+      ]
+    }, options:{responsive:true,plugins:{legend:{labels:{font:{size:10}}}},scales:{y:{ticks:{font:{size:9}},grid:{color:'#F0FDF4'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+
+    new Chart(document.getElementById('chart-pengeluaran'), { type:'doughnut', data:{
+      labels:['SDM/Guru','Lab IT','Tahfidz','KBM','Ekskul','Lainnya'],
+      datasets:[{data:[35,15,18,20,8,4],backgroundColor:[grn,red,teal,blue,amber,'#8B5CF6'],borderWidth:0}]
+    }, options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:9},padding:6}}}}});
+  }
+
+  if (page === 'tahfidz') {
+    new Chart(document.getElementById('chart-juz'), { type:'bar', data:{
+      labels:['<2 Juz','2–3 Juz','3–5 Juz','5–7 Juz','>7 Juz'],
+      datasets:[{data:[13,28,95,62,20],backgroundColor:[red,amber,teal,grn,'#7C3AED']}]
+    }, options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{font:{size:9}},grid:{color:'#F0FDF4'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+
+    const days = Array.from({length:14},(_,i)=>{const d=new Date(2026,3,9-13+i);return (d.getDate())+'/'+(d.getMonth()+1);});
+    new Chart(document.getElementById('chart-setoran'), { type:'line', data:{
+      labels: days,
+      datasets:[{label:'Siswa Setor',data:[170,182,165,188,190,178,0,0,172,185,180,188,192,187],borderColor:grn,backgroundColor:soft(grn),fill:true,tension:.4,spanGaps:false}]
+    }, options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:140,ticks:{font:{size:9}},grid:{color:'#F0FDF4'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+
+    // Build juz grid
+    const grid = document.getElementById('juz-grid');
+    if (grid) {
+      const status = [1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,0,0,0,0,0,0]; // 0=empty,1=done
+      const partial=[8,9,10,11,12,13,22]; // partial = amber
+      for(let i=1;i<=30;i++){
+        const c=document.createElement('div');
+        c.className='juz-cell ';
+        const idx=i-1;
+        if(partial.includes(idx)){c.className+='juz-progress';}
+        else if(status[idx]){c.className+='juz-done';}
+        else{c.className+='juz-empty';}
+        c.textContent=i;
+        c.title='Juz '+i;
+        c.onclick=()=>toast('Juz '+i+': klik untuk detail setoran siswa');
+        grid.appendChild(c);
+      }
+    }
+  }
+
+  if (page === 'lab') {
+    new Chart(document.getElementById('chart-pc'), { type:'doughnut', data:{
+      labels:['Normal (17)','Maintenance (8)','Rusak (16)'],
+      datasets:[{data:[17,8,16],backgroundColor:[grn,amber,red],borderWidth:0}]
+    }, options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:10},padding:8}}}}});
+  }
+
+  if (page === 'evaluasi') {
+    new Chart(document.getElementById('chart-kpi-bulanan'), { type:'bar', data:{
+      labels:['Kehadiran Guru (%)','Nilai Rata-rata','Tahfidz (%)','PPDB Progress (%)','Lab Kapasitas (%)','Serapan Anggaran (%)'],
+      datasets:[
+        {label:'April 2026',data:[97,78,94,87,41,68],backgroundColor:grn},
+        {label:'Maret 2026',data:[94,80,91,62,78,55],backgroundColor:soft(teal,.7)}
+      ]
+    }, options:{responsive:true,plugins:{legend:{labels:{font:{size:10}}}},scales:{y:{beginAtZero:true,max:100,ticks:{font:{size:9}},grid:{color:'#F0FDF4'}},x:{grid:{display:false},ticks:{font:{size:9},maxRotation:20}}}}}); 
+  }
+}
+
+// Draw dashboard charts on first load
+setTimeout(() => drawChartsFor('dashboard'), 100);
+
+// Upload handling
+function prosesUpload(e){
+  const fi=e.target;
+  if(!fi.files.length)return;
+  const nm=fi.files[0].name;
+  document.getElementById('ui-normal').style.display='none';
+  document.getElementById('ui-loading').style.display='block';
+  document.getElementById('nama-file').innerText=nm;
+  fi.disabled=true;
+  setTimeout(()=>{
+    document.getElementById('ui-loading').style.display='none';
+    document.getElementById('ui-normal').style.display='block';
+    fi.disabled=false; fi.value='';
+    munculkanRekomendasiBaru(nm);
+  },2500);
+}
+function munculkanRekomendasiBaru(nm){
+  const c=document.getElementById('container-rekomendasi');
+  const d=document.createElement('div');
+  d.className='reko-card-ai';
+  d.innerHTML=`<div style="display:flex;align-items:flex-start;gap:10px;"><div class="ai-b">AI</div><div style="flex:1;"><span style="font-size:9px;font-weight:700;background:#D1FAE5;color:#065F46;padding:2px 8px;border-radius:999px;text-transform:uppercase;">Hasil analisis baru</span><div style="font-size:12px;font-weight:600;color:#064E3B;margin:6px 0 3px;">Tindak lanjut: ${nm}</div><div style="font-size:11px;color:#374151;margin-bottom:10px;line-height:1.5;">Terdeteksi hambatan KBM dan indikasi tekanan anggaran. Disarankan Rapat Dengar Pendapat dengan Waka Kurikulum segera.</div><div style="display:flex;gap:7px;"><button class="btn-primary" onclick="handleDecision(this,'Jadwalkan Rapat Segera')">Jadwalkan Rapat</button><button class="btn-ghost" onclick="handleDecision(this,'Arsipkan')">Arsipkan</button></div></div></div>`;
+  c.insertAdjacentElement('afterbegin',d);
+}
+function handleDecision(btn,msg){
+  btn.innerText='Telah diproses ✓';
+  btn.className='btn-done'; btn.disabled=true;
+  const sib=btn.parentElement.children;
+  for(let i=0;i<sib.length;i++){if(sib[i]!==btn)sib[i].style.display='none';}
+  toast(msg+' berhasil dicatat');
+}
+
+// Toast
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent='✓ '+msg;
+  t.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(()=>t.style.transform='translateX(-50%) translateY(80px)',2800);
+}
+
+// Modal
+function bukaModal(id){document.getElementById('modal-'+id).classList.add('open');}
+function tutupModal(id){document.getElementById('modal-'+id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+// Notif filter
+function filterNotif(type){
+  document.querySelectorAll('#filter-semua,#filter-kritis,#filter-penting,#filter-info').forEach(el=>el.classList.remove('active-chip'));
+  document.getElementById('filter-'+type).classList.add('active-chip');
+  document.querySelectorAll('#daftar-notif .notif-item').forEach(el=>{
+    el.style.display=(type==='semua'||el.dataset.type===type)?'flex':'none';
+  });
+}
+
+// Bulan filter evaluasi
+function filterBulan(el){
+  document.querySelectorAll('#filter-bulan .chip').forEach(c=>c.classList.remove('active-chip'));
+  el.classList.add('active-chip');
+  toast('Memuat data '+el.textContent);
+}
+</script>
+</body>
+</html>

@@ -50,6 +50,18 @@ body{font-family:'Inter',system-ui,sans-serif;}
 .trend-bar{height:6px;background:#D1FAE5;border-radius:3px;overflow:hidden;}
 .trend-fill{height:100%;border-radius:3px;transition:width .8s ease;}
 .section-head{font-size:11px;font-weight:600;color:#6EE7B7;text-transform:uppercase;letter-spacing:.07em;padding:18px 20px 8px;border-top:1px solid rgba(255,255,255,.07);margin-top:6px;}
+.org-tree{padding:10px 14px 14px;}
+.org-node{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;cursor:default;transition:background .15s;}
+.org-node:hover{background:rgba(255,255,255,.07);}
+.org-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;}
+.org-info{flex:1;min-width:0;}
+.org-name{font-size:11px;font-weight:600;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.org-role{font-size:9px;color:#6EE7B7;margin-top:1px;}
+.org-children{padding-left:18px;position:relative;}
+.org-children::before{content:'';position:absolute;left:13px;top:0;bottom:12px;width:1px;background:rgba(255,255,255,.15);}
+.org-child-wrap{position:relative;}
+.org-child-wrap::before{content:'';position:absolute;left:-5px;top:50%;width:10px;height:1px;background:rgba(255,255,255,.15);}
+
 .topbar-title{font-size:15px;font-weight:600;color:white;letter-spacing:.01em;}
 .topbar-right{display:flex;align-items:center;gap:16px;}
 .avatar{width:32px;height:32px;border-radius:50%;background:#34D399;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#064E3B;}
@@ -127,12 +139,12 @@ tr:last-child td{border-bottom:none;}
       </div>
     </div>
     <div class="topbar-right">
-      <div style="font-size:12px;color:#A7F3D0;" id="tanggal-topbar">Kamis, 9 April 2026</div>
+      <div style="font-size:12px;color:#A7F3D0;" id="tanggal-topbar">Memuat...</div>
       <div class="notif-wrap" onclick="bukaHalaman('notif')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A7F3D0" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <div class="notif-dot" id="notif-dot"></div>
       </div>
-      <div class="avatar" style="cursor:pointer;" onclick="bukaModal('profil')">US</div>
+      <div class="avatar" style="cursor:pointer;" onclick="bukaModal('profil')">EF</div>
     </div>
   </div>
 
@@ -179,6 +191,50 @@ tr:last-child td{border-bottom:none;}
       <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       Notifikasi
     </div>
+
+    <!-- STRUKTUR ORGANISASI -->
+    <div class="section-head">Struktur Organisasi</div>
+    <div class="org-tree">
+      <!-- Kepala Sekolah -->
+      <div class="org-node" style="background:rgba(52,211,153,.15);border:0.5px solid rgba(52,211,153,.3);margin-bottom:6px;">
+        <div class="org-avatar" style="background:#34D399;color:#064E3B;">EF</div>
+        <div class="org-info">
+          <div class="org-name">Efan Fauzan</div>
+          <div class="org-role">⭐ Kepala Sekolah</div>
+        </div>
+      </div>
+      <!-- Admin -->
+      <div class="org-children">
+        <div class="org-child-wrap" style="margin-bottom:6px;">
+          <div class="org-node" style="background:rgba(59,130,246,.1);border:0.5px solid rgba(59,130,246,.2);">
+            <div class="org-avatar" style="background:#3B82F6;color:white;">FA</div>
+            <div class="org-info">
+              <div class="org-name">Farida Fallah Asty</div>
+              <div class="org-role">🔧 Administrator</div>
+            </div>
+          </div>
+        </div>
+        <!-- Staff/Guru -->
+        <div class="org-child-wrap" style="margin-bottom:4px;">
+          <div class="org-node" style="background:rgba(245,158,11,.08);border:0.5px solid rgba(245,158,11,.2);">
+            <div class="org-avatar" style="background:#F59E0B;color:#064E3B;">IN</div>
+            <div class="org-info">
+              <div class="org-name">Izzatun Nurhanifah</div>
+              <div class="org-role">📚 Staf / Guru</div>
+            </div>
+          </div>
+        </div>
+        <div class="org-child-wrap" style="margin-bottom:4px;">
+          <div class="org-node">
+            <div class="org-avatar" style="background:rgba(255,255,255,.15);color:#A7F3D0;font-size:8px;">+</div>
+            <div class="org-info">
+              <div class="org-name" style="color:#A7F3D0;font-size:10px;">Rekan-rekan Guru</div>
+              <div class="org-role">📚 Staf / Guru</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- MAIN CONTENT -->
@@ -187,8 +243,8 @@ tr:last-child td{border-bottom:none;}
     <!-- ===== DASHBOARD ===== -->
     <div class="page active" id="halaman-dashboard">
       <div style="margin-bottom:20px;">
-        <div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Ahlan wa Sahlan, Ustadz.</div>
-        <div style="font-size:13px;color:#059669;">Ringkasan data strategis & rekomendasi AI hari ini — Kamis, 9 April 2026.</div>
+        <div style="font-size:20px;font-weight:700;color:#064E3B;margin-bottom:2px;">Selamat Datang, Kepsek Efan Fauzan.</div>
+        <div style="font-size:13px;color:#059669;" id="sub-tanggal-dashboard">Ringkasan data strategis & rekomendasi AI hari ini.</div>
       </div>
 
       <div class="kpi-grid">
@@ -649,10 +705,10 @@ tr:last-child td{border-bottom:none;}
 <div class="modal-overlay" id="modal-profil">
   <div class="modal">
     <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-      <div style="width:48px;height:48px;background:#34D399;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#064E3B;">US</div>
-      <div><div class="modal-title" style="margin-bottom:0;">Ustadz Syaifulloh, M.Pd</div><div style="font-size:12px;color:#059669;">Kepala Sekolah — SMA IT Prototype</div></div>
+      <div style="width:48px;height:48px;background:#34D399;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#064E3B;">EF</div>
+      <div><div class="modal-title" style="margin-bottom:0;">Efan Fauzan, S.Pd</div><div style="font-size:12px;color:#059669;">Kepala Sekolah — SMA IT Prototype</div></div>
     </div>
-    <div style="font-size:12px;color:#374151;margin-bottom:16px;line-height:1.6;">Login terakhir: Kamis, 9 April 2026 pukul 07.12 WIB<br>Akses: Administrator Penuh</div>
+    <div style="font-size:12px;color:#374151;margin-bottom:16px;line-height:1.6;">Login terakhir: <span id="modal-login-time">—</span><br>Akses: Administrator Penuh</div>
     <div class="modal-actions"><button class="btn-ghost" onclick="tutupModal('profil')">Tutup</button><button class="btn-primary" onclick="toast('Sedang logout...');tutupModal('profil')">Logout</button></div>
   </div>
 </div>
@@ -801,7 +857,50 @@ function drawChartsFor(page) {
   }
 }
 
-// Draw dashboard charts on first load
+// ===== REAL-TIME WIB CLOCK =====
+(function() {
+  const DAYS_ID = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const MONTHS_ID = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+  function getWIBDate() {
+    // WIB = UTC+7
+    const now = new Date();
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    return new Date(utc + 7 * 3600000);
+  }
+
+  function pad(n) { return String(n).padStart(2,'0'); }
+
+  function updateClock() {
+    const d = getWIBDate();
+    const dayName = DAYS_ID[d.getDay()];
+    const date = d.getDate();
+    const month = MONTHS_ID[d.getMonth()];
+    const year = d.getFullYear();
+    const hh = pad(d.getHours());
+    const mm = pad(d.getMinutes());
+    const ss = pad(d.getSeconds());
+
+    const dateStr = `${dayName}, ${date} ${month} ${year}`;
+    const timeStr = `${hh}:${mm}:${ss} WIB`;
+
+    const topbarEl = document.getElementById('tanggal-topbar');
+    if (topbarEl) topbarEl.textContent = `${dateStr} · ${timeStr}`;
+
+    const subEl = document.getElementById('sub-tanggal-dashboard');
+    if (subEl) subEl.textContent = `Ringkasan data strategis & rekomendasi AI hari ini — ${dateStr}.`;
+
+    const modalEl = document.getElementById('modal-login-time');
+    if (modalEl && modalEl.textContent === '—') {
+      modalEl.textContent = `${dayName}, ${date} ${month} ${year} pukul ${hh}.${mm} WIB`;
+    }
+  }
+
+  updateClock();
+  setInterval(updateClock, 1000);
+})();
+
+
 setTimeout(() => drawChartsFor('dashboard'), 100);
 
 // Upload handling

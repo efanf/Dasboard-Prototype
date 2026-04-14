@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Domain Expansion: Reality Architecting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-0: #0a0a0c;
+    --bg-1: #111116;
+    --bg-2: #18181f;
+    --bg-3: #20202a;
+    --bg-4: #2a2a36;
+    --border: rgba(255,255,255,0.07);
+    --border-mid: rgba(255,255,255,0.12);
+    --border-hi: rgba(255,255,255,0.22);
+    --text-1: #f0eff5;
+    --text-2: #a09fb8;
+    --text-3: #5e5d78;
+    --text-4: #3a3950;
+
+    --c0: #8b83e8;   /* boundary - purple */
+    --c0d: #3d3880;
+    --c0bg: rgba(139,131,232,0.08);
+    --c1: #2ec497;   /* core - teal */
+    --c1d: #1a6b55;
+    --c1bg: rgba(46,196,151,0.08);
+    --c2: #e8714a;   /* sensory - coral */
+    --c2d: #7a3520;
+    --c2bg: rgba(232,113,74,0.08);
+    --c3: #d49435;   /* sure-hit - amber */
+    --c3d: #6e4a10;
+    --c3bg: rgba(212,148,53,0.08);
+    --c4: #4fa3e8;   /* dissolve - blue */
+    --c4d: #1d4e80;
+    --c4bg: rgba(79,163,232,0.08);
+
+    --font-display: 'Syne', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --dur: 0.5s;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-0);
+    color: var(--text-1);
+    font-family: var(--font-display);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE TEXTURE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  /* ─── AMBIENT GLOW ─── */
+  .ambient {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+  }
+  .ambient.a1 { width: 500px; height: 500px; top: -150px; left: -150px; background: radial-gradient(circle, rgba(139,131,232,0.12), transparent 70%); }
+  .ambient.a2 { width: 400px; height: 400px; bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(46,196,151,0.1), transparent 70%); }
+  .ambient.a3 { width: 350px; height: 350px; top: 40%; left: 40%; transform: translate(-50%,-50%); background: radial-gradient(circle, rgba(79,163,232,0.08), transparent 70%); }
+  body.domain-open .ambient { opacity: 1; }
+
+  /* ─── LAYOUT ─── */
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 60px 40px 80px;
+  }
+
+  @media (max-width: 700px) {
+    .page { padding: 40px 20px 60px; }
+  }
+
+  /* ─── HEADER ─── */
+  .header { margin-bottom: 64px; }
+
+  .header-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--text-3);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-eyebrow::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: var(--text-4);
+  }
+
+  h1 {
+    font-size: clamp(32px, 5vw, 56px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    color: var(--text-1);
+    margin-bottom: 20px;
+  }
+  h1 span {
+    color: var(--c0);
+  }
+
+  .header-desc {
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.7;
+    max-width: 560px;
+    font-weight: 400;
+  }
+
+  /* ─── DOMAIN CANVAS ─── */
+  .domain-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-bottom: 48px;
+    align-items: start;
+  }
+
+  @media (max-width: 850px) {
+    .domain-section { grid-template-columns: 1fr; }
+  }
+
+  /* ─── RADIAL CANVAS ─── */
+  .radial-canvas {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .radial-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ─── PHASE CARDS (right column) ─── */
+  .phases-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .phase-card {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: background 0.25s, border-color 0.25s, transform 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .phase-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    border-radius: 2px 0 0 2px;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .phase-card:hover {
+    background: var(--bg-2);
+    border-color: var(--border-mid);
+    transform: translateX(3px);
+  }
+  .phase-card.active {
+    background: var(--bg-3);
+    border-color: var(--border-mid);
+    transform: translateX(6px);
+  }
+  .phase-card.active::before { opacity: 1; }
+
+  .phase-card[data-i="0"]::before { background: var(--c0); }
+  .phase-card[data-i="1"]::before { background: var(--c1); }
+  .phase-card[data-i="2"]::before { background: var(--c2); }
+  .phase-card[data-i="3"]::before { background: var(--c3); }
+  .phase-card[data-i="4"]::before { background: var(--c4); }
+
+  .phase-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-3);
+    min-width: 20px;
+    padding-top: 1px;
+    flex-shrink: 0;
+  }
+  .phase-card.active .phase-num { color: var(--text-2); }
+
+  .phase-card-body { flex: 1; }
+
+  .phase-card-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 3px;
+    letter-spacing: -0.01em;
+  }
+  .phase-card-sub {
+    font-size: 11px;
+    color: var(--text-3);
+    font-family: var(--font-mono);
+  }
+  .phase-card.active .phase-card-sub { color: var(--text-2); }
+
+  .phase-card-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    align-self: center;
+    opacity: 0.7;
+  }
+  .phase-card[data-i="0"] .phase-card-tag { background: var(--c0bg); color: var(--c0); }
+  .phase-card[data-i="1"] .phase-card-tag { background: var(--c1bg); color: var(--c1); }
+  .phase-card[data-i="2"] .phase-card-tag { background: var(--c2bg); color: var(--c2); }
+  .phase-card[data-i="3"] .phase-card-tag { background: var(--c3bg); color: var(--c3); }
+  .phase-card[data-i="4"] .phase-card-tag { background: var(--c4bg); color: var(--c4); }
+
+  /* ─── DETAIL PANEL ─── */
+  .detail-section {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px 36px;
+    margin-bottom: 48px;
+    min-height: 220px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .detail-section.has-content {
+    border-color: var(--border-mid);
+  }
+
+  .detail-accent {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .detail-section.has-content .detail-accent { opacity: 1; }
+
+  .detail-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    color: var(--text-4);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-align: center;
+    gap: 12px;
+  }
+  .detail-empty svg { opacity: 0.3; }
+
+  .detail-content { display: none; }
+  .detail-content.visible { display: block; }
+
+  .detail-step-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .detail-step-tag::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .detail-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-1);
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+
+  .detail-desc {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.75;
+    margin-bottom: 20px;
+    max-width: 640px;
+  }
+
+  .detail-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  @media (max-width: 600px) {
+    .detail-meta { grid-template-columns: 1fr; }
+  }
+
+  .meta-box {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .meta-box-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 6px;
+  }
+  .meta-box-text {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .meta-box.jjk-box {
+    border-left: 2px solid;
+    grid-column: 1 / -1;
+  }
+  .meta-box.jjk-box .meta-box-text {
+    font-style: italic;
+  }
+
+  /* ─── DOMAIN TOGGLE ─── */
+  .domain-toggle-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 52px;
+  }
+
+  .domain-btn {
+    position: relative;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 36px;
+    border-radius: 999px;
+    border: 1px solid var(--border-mid);
+    background: var(--bg-2);
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.35s ease;
+    overflow: hidden;
+  }
+  .domain-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, rgba(139,131,232,0.2), rgba(46,196,151,0.15));
+    opacity: 0;
+    transition: opacity 0.35s;
+  }
+  .domain-btn:hover { border-color: var(--border-hi); color: var(--text-1); }
+  .domain-btn.active { border-color: rgba(139,131,232,0.5); color: var(--c0); }
+  .domain-btn.active::before { opacity: 1; }
+
+  .domain-btn-text { position: relative; }
+
+  /* ─── THEORY SECTION ─── */
+  .theory-section {
+    margin-bottom: 52px;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .theory-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  @media (max-width: 700px) {
+    .theory-grid { grid-template-columns: 1fr; }
+  }
+
+  .theory-card {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .theory-num {
+    font-family: var(--font-mono);
+    font-size: 32px;
+    font-weight: 300;
+    color: var(--bg-4);
+    line-height: 1;
+    margin-bottom: 14px;
+    letter-spacing: -0.04em;
+  }
+
+  .theory-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-1);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+
+  .theory-desc {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+
+  /* ─── FOOTER ─── */
+  .page-footer {
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-4);
+  }
+  .footer-text strong { color: var(--text-3); font-weight: 400; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.06; }
+    50% { opacity: 0.14; }
+  }
+  @keyframes rotate-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .detail-content.visible {
+    animation: fade-in-up 0.35s ease forwards;
+  }
+
+  /* ─── SVG ANIMATIONS ─── */
+  .ring-pulse { animation: pulse-ring 4s ease-in-out infinite; }
+  .ring-pulse-2 { animation: pulse-ring 5s ease-in-out infinite 1s; }
+  .ring-pulse-3 { animation: pulse-ring 6s ease-in-out infinite 2s; }
+
+  .orbit-path { animation: rotate-slow 60s linear infinite; transform-origin: 220px 220px; }
+  body.domain-open .orbit-path { animation-duration: 30s; }
+
+  @keyframes node-appear {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .domain-node {
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .domain-node:hover .node-circle { opacity: 0.9; }
+  .domain-node.active-node .node-circle { stroke-width: 2; }
+</style>
+</head>
+<body>
+
+<div class="ambient a1"></div>
+<div class="ambient a2"></div>
+<div class="ambient a3"></div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-eyebrow">Framework Presentasi</div>
+    <h1>Domain Expansion:<br><span>Reality Architecting</span></h1>
+    <p class="header-desc">
+      Metode membangun arsitektur realita dalam pikiran audiens — terinspirasi dari Domain Expansion JJK dan diperkuat oleh Narrative Transportation Theory (Green & Brock).
+    </p>
+  </header>
+
+  <!-- DOMAIN TOGGLE -->
+  <div class="domain-toggle-wrap">
+    <button class="domain-btn" id="domainBtn" onclick="toggleDomain()">
+      <span class="domain-btn-text" id="domainBtnText">Aktifkan Domain</span>
+    </button>
+  </div>
+
+  <!-- MAIN: RADIAL + PHASE LIST -->
+  <div class="domain-section">
+
+    <!-- SVG RADIAL CANVAS -->
+    <div class="radial-canvas">
+      <svg class="radial-svg" viewBox="0 0 440 440" xmlns="http://www.w3.org/2000/svg" id="domainSvg">
+        <defs>
+          <radialGradient id="orbGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#8b83e8" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#8b83e8" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="orbGradActive" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#8b83e8" stop-opacity="0.5"/>
+            <stop offset="60%" stop-color="#4fa3e8" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#2ec497" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- BG RINGS -->
+        <circle class="ring-pulse" cx="220" cy="220" r="185" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+        <circle class="ring-pulse-2" cx="220" cy="220" r="140" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+        <circle class="ring-pulse-3" cx="220" cy="220" r="95" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+        <circle cx="220" cy="220" r="48" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="0.5"/>
+
+        <!-- ORBIT RING (dashed, rotating) -->
+        <circle id="orbitRing" cx="220" cy="220" r="155" fill="none" stroke="rgba(139,131,232,0.15)" stroke-width="0.5" stroke-dasharray="4 8"/>
+
+        <!-- CONNECTOR LINES -->
+        <g id="connectorLines" opacity="0.25"></g>
+
+        <!-- PHASE NODES (will be positioned by JS) -->
+        <g id="phaseNodes"></g>
+
+        <!-- CENTER ORB -->
+        <circle id="orbGlow" cx="220" cy="220" r="52" fill="url(#orbGrad)" opacity="0"/>
+        <circle id="orbCircle" cx="220" cy="220" r="36" fill="#111116" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>
+        <text id="orbText1" x="220" y="215" text-anchor="middle" fill="#5e5d78" font-family="'DM Mono', monospace" font-size="9" letter-spacing="0.1em" text-transform="uppercase">DOMAIN</text>
+        <text id="orbText2" x="220" y="228" text-anchor="middle" fill="#5e5d78" font-family="'DM Mono', monospace" font-size="9" letter-spacing="0.1em">CLOSED</text>
+      </svg>
+    </div>
+
+    <!-- PHASE LIST -->
+    <div class="phases-list" id="phasesList"></div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-section" id="detailSection">
+    <div class="detail-accent" id="detailAccent"></div>
+
+    <div class="detail-empty" id="detailEmpty">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="0.75" stroke-dasharray="3 3"/>
+        <circle cx="16" cy="16" r="7" stroke="currentColor" stroke-width="0.75"/>
+        <circle cx="16" cy="16" r="2" fill="currentColor"/>
+      </svg>
+      <span>Aktifkan domain — lalu pilih fase</span>
+    </div>
+
+    <div class="detail-content" id="detailContent"></div>
+  </div>
+
+  <!-- THEORY PILLARS -->
+  <div class="theory-section">
+    <div class="section-label">Fondasi Teori</div>
+    <div class="theory-grid">
+      <div class="theory-card">
+        <div class="theory-num">01</div>
+        <div class="theory-title">Coherent Narrative</div>
+        <div class="theory-desc">Otak manusia menyerap satu "dunia" yang utuh jauh lebih mudah daripada potongan materi. Tiap poin saling berkaitan membentuk gravitasi narasi.</div>
+      </div>
+      <div class="theory-card">
+        <div class="theory-num">02</div>
+        <div class="theory-title">Cognitive Ease</div>
+        <div class="theory-desc">Pembicara yang kerja keras merakit hubungan antar-poin. Audiens tinggal "jalan-jalan" di dalam dunia yang sudah jadi — beban kognitif berkurang drastis.</div>
+      </div>
+      <div class="theory-card">
+        <div class="theory-num">03</div>
+        <div class="theory-title">Paradigm Shift</div>
+        <div class="theory-desc">Bukan sekadar memberi info baru, tapi memberi "kacamata" baru. Isu yang tadinya rumit jadi simpel karena alur pikir audiens sudah diarsitekturi ulang.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <div class="footer-text">
+      <strong>Domain Expansion: Reality Architecting</strong> — Framework Presentasi
+    </div>
+    <div class="footer-text">
+      Referensi: Green & Brock · Narrative Transportation Theory · JJK Domain Expansion
+    </div>
+  </footer>
+
+</div>
+
+<script>
+const COLORS = ['#8b83e8','#2ec497','#e8714a','#d49435','#4fa3e8'];
+const COLORS_BG = [
+  'rgba(139,131,232,0.08)',
+  'rgba(46,196,151,0.08)',
+  'rgba(232,113,74,0.08)',
+  'rgba(212,148,53,0.08)',
+  'rgba(79,163,232,0.08)'
+];
+
+const PHASES = [
+  {
+    angle: 270,
+    label: 'Boundary Setting',
+    sub: 'Pintu Masuk',
+    tag: 'Step 01',
+    title: 'Pintu Masuk — Buka Domain',
+    desc: 'Lu memutus arus pikiran audiens — scrolling, lapar, bosen, main HP — dengan isu yang kontradiktif atau relate banget sama mereka. Ini momen domain "terbuka": attention field terbentuk, pikiran lain terputus. Audiens belum sadar mereka sudah masuk ke ruang yang lu kontrol.',
+    theory: 'Narrative Transportation Theory (Green & Brock): transportasi naratif dimulai saat ada disruption dari realita sehari-hari audiens. Satu pertanyaan yang tepat cukup untuk memotong arus default mode network mereka.',
+    jjk: 'Di JJK, domain tidak dibuka dengan kekerasan — tapi dengan barrier. Unlimited Void Gojo mengambil alih persepsi dalam sekejap, tanpa resistensi.',
+    jjkColor: '#8b83e8'
+  },
+  {
+    angle: 342,
+    label: 'Core Manifestation',
+    sub: 'Pondasi Dunia',
+    tag: 'Step 02',
+    title: 'Pondasi Dunia — Hukum Alam Domain',
+    desc: 'Data, fakta, dan angka bukan sekadar bukti — mereka adalah "hukum alam" di dalam dunia yang lu bangun. Ini yang membuat domain lu terasa solid dan nggak bisa dibilang halu. Audiens ngerasa dunia yang lu ciptakan punya gravitasi nyata.',
+    theory: 'Cognitive Ease: otak kita menerima informasi yang datang dalam struktur konsisten sebagai "kebenaran". Fakta yang disajikan dalam narasi yang utuh lebih dipercaya daripada fakta yang berdiri sendiri — efek yang dikenal sebagai Processing Fluency.',
+    jjk: 'Infinite Void Gojo mengisi setiap neuron lawan dengan informasi yang tak terbatas — overwhelming, tapi bukan kosong. Ini analoginya: data lu bukan banjir, tapi arsitektur.',
+    jjkColor: '#2ec497'
+  },
+  {
+    angle: 54,
+    label: 'Sensory Infusion',
+    sub: 'Vibes & Emosi',
+    tag: 'Step 03',
+    title: 'Vibes & Emosi — Transportasi Naratif',
+    desc: 'Pengalaman pribadi, situasi nyata di lapangan (kondisi kampus, keseharian audiens), dan visualisasi verbal membuat audiens merasakan keterlibatan emosional. Mereka bukan lagi penonton — mereka ada di dalam domain. Loss of self-awareness terjadi: suara di luar tidak terdengar, PPT tidak relevan.',
+    theory: 'Narrative Transportation Theory: saat mental model terbentuk penuh, audiens mengalami loss of awareness terhadap lingkungan luar. Ini yang disebut "being transported" — bukan metafora, tapi fenomena yang terukur secara psikologis.',
+    jjk: 'Hollow Purple: dua domain bertemu dan menciptakan void di mana hanya satu realita yang ada. Realita pembicara. Audiens tidak punya anchor lain.',
+    jjkColor: '#e8714a'
+  },
+  {
+    angle: 126,
+    label: 'Sure-Hit Logic',
+    sub: 'Efek Serangan Telak',
+    tag: 'Step 04',
+    title: 'Serangan Telak — Kesimpulan Mutlak',
+    desc: 'Karena audiens sudah menerima pondasi dunia lu dan terlibat emosional, kesimpulan yang lu sampaikan bukan lagi opini — melainkan konsekuensi logis yang tak terhindarkan. Mereka tidak bisa menolak karena logikanya sudah selaras dengan dunia yang mereka tempati dalam pikiran mereka.',
+    theory: 'Paradigm Shift (Kuhn): ketika seseorang sudah memakai "kacamata" baru, maka isu-isu yang sebelumnya rumit menjadi simpel — bukan karena isunya berubah, tapi karena alur pikir audiens sudah di-reset.',
+    jjk: 'Di dalam domain, setiap serangan dijamin kena. Bukan karena musuh lemah, tapi karena space sudah sepenuhnya dikuasai oleh yang membuka domain.',
+    jjkColor: '#d49435'
+  },
+  {
+    angle: 198,
+    label: 'Domain Dissolve',
+    sub: 'Residu Berpikir',
+    tag: 'Step 05',
+    title: 'Residu Berpikir — Can\'t Unsee',
+    desc: 'Presentasi selesai, domain "dilepas" — tapi audiens tidak bisa kembali ke cara pandang lama. Mereka sudah melihat dunia lewat mata lu. Tepuk tangan yang lu dengar bukan sekadar apresiasi — itu konfirmasi dari pergeseran paradigma yang baru saja terjadi di kepala mereka.',
+    theory: 'Coherent Narrative Effect: otak manusia meretain "dunia" yang utuh jauh lebih lama daripada potongan fakta. Bukan karena mereka hafal faktanya, tapi karena mereka merasakan dunianya.',
+    jjk: 'Setelah domain ditutup, efeknya tetap ada. Tidak ada "undo". Lawan sudah berubah — cara pandang mereka tentang realita sudah diarsitekturi ulang secara permanen.',
+    jjkColor: '#4fa3e8'
+  }
+];
+
+let domainOpen = false;
+let selectedPhase = -1;
+
+const svg = document.getElementById('domainSvg');
+const connectorLines = document.getElementById('connectorLines');
+const phaseNodesG = document.getElementById('phaseNodes');
+const phasesList = document.getElementById('phasesList');
+const detailSection = document.getElementById('detailSection');
+const detailContent = document.getElementById('detailContent');
+const detailEmpty = document.getElementById('detailEmpty');
+const detailAccent = document.getElementById('detailAccent');
+const orbGlow = document.getElementById('orbGlow');
+const orbCircle = document.getElementById('orbCircle');
+const orbText1 = document.getElementById('orbText1');
+const orbText2 = document.getElementById('orbText2');
+const domainBtn = document.getElementById('domainBtn');
+const domainBtnText = document.getElementById('domainBtnText');
+
+const CX = 220, CY = 220, R = 155;
+
+function getPos(angle, radius) {
+  const rad = (angle * Math.PI) / 180;
+  return {
+    x: CX + radius * Math.cos(rad),
+    y: CY + radius * Math.sin(rad)
+  };
+}
+
+// ─── BUILD PHASE LIST ───
+PHASES.forEach((p, i) => {
+  const card = document.createElement('div');
+  card.className = 'phase-card';
+  card.dataset.i = i;
+  card.innerHTML = `
+    <div class="phase-num">0${i+1}</div>
+    <div class="phase-card-body">
+      <div class="phase-card-name">${p.label}</div>
+      <div class="phase-card-sub">${p.sub}</div>
+    </div>
+    <div class="phase-card-tag">${p.tag}</div>
+  `;
+  card.onclick = () => selectPhase(i);
+  phasesList.appendChild(card);
+});
+
+// ─── BUILD SVG NODES ───
+function buildNodes() {
+  phaseNodesG.innerHTML = '';
+  connectorLines.innerHTML = '';
+
+  PHASES.forEach((p, i) => {
+    const pos = getPos(p.angle, R);
+    const color = COLORS[i];
+
+    // Connector line
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    const innerPos = getPos(p.angle, 42);
+    const outerPos = getPos(p.angle, R - 26);
+    line.setAttribute('x1', innerPos.x);
+    line.setAttribute('y1', innerPos.y);
+    line.setAttribute('x2', outerPos.x);
+    line.setAttribute('y2', outerPos.y);
+    line.setAttribute('stroke', color);
+    line.setAttribute('stroke-width', '0.5');
+    line.setAttribute('stroke-dasharray', '3 5');
+    line.setAttribute('opacity', domainOpen ? '0.4' : '0');
+    line.setAttribute('id', `conn${i}`);
+    line.style.transition = 'opacity 0.5s';
+    connectorLines.appendChild(line);
+
+    // Node group
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'domain-node');
+    g.setAttribute('id', `dnode${i}`);
+    g.setAttribute('transform', `translate(${pos.x},${pos.y})`);
+    g.style.opacity = domainOpen ? '1' : '0';
+    g.style.transition = `opacity 0.5s ${i * 0.08}s`;
+    g.onclick = () => { if(domainOpen) selectPhase(i); };
+
+    const outerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    outerCircle.setAttribute('r', '22');
+    outerCircle.setAttribute('fill', `rgba(${hexToRgb(color)},0.08)`);
+    outerCircle.setAttribute('stroke', `rgba(${hexToRgb(color)},0.25)`);
+    outerCircle.setAttribute('stroke-width', '0.75');
+    outerCircle.setAttribute('class', 'node-circle');
+    outerCircle.setAttribute('id', `nodeOuter${i}`);
+
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('r', '4');
+    dot.setAttribute('fill', color);
+    dot.setAttribute('opacity', '0.8');
+
+    // Step number
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('y', '35');
+    txt.setAttribute('text-anchor', 'middle');
+    txt.setAttribute('fill', color);
+    txt.setAttribute('font-family', "'DM Mono', monospace");
+    txt.setAttribute('font-size', '8');
+    txt.setAttribute('letter-spacing', '0.06em');
+    txt.setAttribute('opacity', '0.7');
+    txt.textContent = `0${i+1}`;
+
+    g.appendChild(outerCircle);
+    g.appendChild(dot);
+    g.appendChild(txt);
+    phaseNodesG.appendChild(g);
+  });
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `${r},${g},${b}`;
+}
+
+// ─── TOGGLE DOMAIN ───
+function toggleDomain() {
+  domainOpen = !domainOpen;
+  document.body.classList.toggle('domain-open', domainOpen);
+  domainBtn.classList.toggle('active', domainOpen);
+  domainBtnText.textContent = domainOpen ? 'Tutup Domain' : 'Aktifkan Domain';
+
+  // Orb
+  orbGlow.style.transition = 'opacity 0.8s';
+  orbGlow.setAttribute('fill', domainOpen ? 'url(#orbGradActive)' : 'url(#orbGrad)');
+  orbGlow.style.opacity = domainOpen ? '1' : '0';
+  orbCircle.setAttribute('stroke', domainOpen ? 'rgba(139,131,232,0.4)' : 'rgba(255,255,255,0.1)');
+  orbText1.setAttribute('fill', domainOpen ? '#8b83e8' : '#5e5d78');
+  orbText2.setAttribute('fill', domainOpen ? '#8b83e8' : '#5e5d78');
+  orbText2.textContent = domainOpen ? 'OPEN' : 'CLOSED';
+
+  PHASES.forEach((p, i) => {
+    const node = document.getElementById(`dnode${i}`);
+    const conn = document.getElementById(`conn${i}`);
+    if (node) {
+      node.style.opacity = domainOpen ? '1' : '0';
+      node.style.transition = `opacity 0.5s ${i * 0.08}s`;
+    }
+    if (conn) {
+      conn.style.transition = `opacity 0.5s ${i * 0.08 + 0.1}s`;
+      conn.setAttribute('opacity', domainOpen ? '0.4' : '0');
+    }
+  });
+
+  if (!domainOpen) {
+    clearSelection();
+  }
+}
+
+// ─── SELECT PHASE ───
+function selectPhase(i) {
+  if (!domainOpen) toggleDomain();
+
+  selectedPhase = i;
+  const p = PHASES[i];
+  const color = COLORS[i];
+
+  // Update cards
+  document.querySelectorAll('.phase-card').forEach((c, j) => {
+    c.classList.toggle('active', j === i);
+  });
+
+  // Update SVG nodes
+  PHASES.forEach((_, j) => {
+    const outer = document.getElementById(`nodeOuter${j}`);
+    if (outer) {
+      outer.setAttribute('fill', j === i ? `rgba(${hexToRgb(COLORS[j])},0.18)` : `rgba(${hexToRgb(COLORS[j])},0.08)`);
+      outer.setAttribute('stroke-width', j === i ? '1.5' : '0.75');
+    }
+  });
+
+  // Accent bar
+  detailAccent.style.background = `linear-gradient(90deg, ${color}, transparent)`;
+  detailSection.classList.add('has-content');
+
+  // Detail content
+  detailContent.classList.remove('visible');
+  setTimeout(() => {
+    detailContent.innerHTML = `
+      <div class="detail-step-tag" style="color:${color}">${p.tag} — ${p.label}</div>
+      <div class="detail-title">${p.title}</div>
+      <div class="detail-desc">${p.desc}</div>
+      <div class="detail-meta">
+        <div class="meta-box">
+          <div class="meta-box-label">Fondasi Teori</div>
+          <div class="meta-box-text">${p.theory}</div>
+        </div>
+        <div class="meta-box jjk-box" style="border-left-color:${color}">
+          <div class="meta-box-label" style="color:${color}">⬡ Analogi JJK</div>
+          <div class="meta-box-text" style="color:${p.jjkColor}">${p.jjk}</div>
+        </div>
+      </div>
+    `;
+    detailEmpty.style.display = 'none';
+    detailContent.classList.add('visible');
+  }, 100);
+}
+
+function clearSelection() {
+  selectedPhase = -1;
+  document.querySelectorAll('.phase-card').forEach(c => c.classList.remove('active'));
+  detailSection.classList.remove('has-content');
+  detailContent.classList.remove('visible');
+  detailEmpty.style.display = 'flex';
+  PHASES.forEach((_, j) => {
+    const outer = document.getElementById(`nodeOuter${j}`);
+    if (outer) {
+      outer.setAttribute('fill', `rgba(${hexToRgb(COLORS[j])},0.08)`);
+      outer.setAttribute('stroke-width', '0.75');
+    }
+  });
+}
+
+// ─── INIT ───
+buildNodes();
+</script>
+</body>
+</html>

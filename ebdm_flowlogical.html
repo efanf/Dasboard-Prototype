@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kerangka Operasional Penelitian EBDM</title>
+<style>
+  :root {
+    --bg-main: #f1f5f9; 
+    --bg-card: #ffffff;
+    --text-main: #0f172a; 
+    --text-muted: #334155; 
+    --border: #cbd5e1; 
+    --primary: #2563eb;
+    --primary-light: #dbeafe;
+    
+    /* Warna Tematik Dimensi */
+    --c-d1: #b91c1c; --bg-d1: #fee2e2;
+    --c-d2: #6d28d9; --bg-d2: #ede9fe;
+    --c-d3: #047857; --bg-d3: #d1fae5;
+    --c-d4: #b45309; --bg-d4: #fef3c7;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.6;
+    padding: 2rem;
+    max-width: 1050px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  *, *::before, *::after {
+    box-sizing: inherit;
+  }
+
+  h1 { 
+    font-size: 1.6rem; 
+    border-bottom: 2px solid var(--border); 
+    padding-bottom: 1rem; 
+    margin-bottom: 1.5rem; 
+    color: #1e293b;
+    font-weight: 800;
+  }
+
+  /* Navigation Tabs - Mobile Scrollable */
+  .tabs { 
+    display: flex; 
+    gap: 0.5rem; 
+    margin-bottom: 2rem; 
+    border-bottom: 2px solid var(--border); 
+    padding-bottom: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll di iOS */
+  }
+  
+  /* Sembunyikan scrollbar di tab untuk estetika */
+  .tabs::-webkit-scrollbar { height: 4px; }
+  .tabs::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+  .tab-btn {
+    padding: 0.8rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: #64748b;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    flex-shrink: 0; /* Biar tombol gak menciut di HP */
+  }
+  .tab-btn:hover { color: var(--text-main); background: #e2e8f0; border-radius: 8px 8px 0 0; }
+  .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: #ffffff; border-radius: 8px 8px 0 0; }
+
+  .tab-content { 
+    display: none; 
+    background: var(--bg-card); 
+    padding: 2.5rem; 
+    border-radius: 12px; 
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+    border: 1px solid var(--border); 
+  }
+  .tab-content.active { display: block; }
+
+  /* Flowchart Flex/Grid */
+  .flow-section { margin-bottom: 2.5rem; position: relative; }
+  .flow-title { 
+    font-size: 0.9rem; 
+    font-weight: 800; 
+    letter-spacing: 1px; 
+    margin-bottom: 1.5rem; 
+    text-align: center; 
+    text-transform: uppercase;
+  }
+  
+  .flow-row { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+  
+  .flow-card {
+    background: #fff; 
+    border: 1px solid var(--border); 
+    border-radius: 8px; 
+    padding: 1.25rem; 
+    text-align: center; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    flex: 1 1 220px; /* Base width dinamis */
+    max-width: 100%;
+  }
+  .flow-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .flow-card h4 { margin: 0 0 0.5rem 0; font-size: 1rem; color: var(--text-main); font-weight: 700; }
+  .flow-card p { margin: 0; font-size: 0.85rem; color: var(--text-muted); font-weight: 500; line-height: 1.5; }
+  
+  .arrow-down { text-align: center; color: #64748b; font-size: 1.5rem; margin: 0.5rem 0; font-weight: bold; }
+  
+  .arrow-label { 
+    font-size: 0.85rem; 
+    font-weight: 600;
+    color: #1e293b; 
+    background: #f8fafc; 
+    padding: 0.4rem 1.2rem; 
+    border-radius: 20px; 
+    display: inline-block; 
+    transform: translateY(-10px); 
+    border: 1px solid #94a3b8; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+
+  /* Accordion Matrix */
+  .dimensi-card { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1rem; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+  .dimensi-header { padding: 1.25rem; display: flex; align-items: flex-start; justify-content: space-between; cursor: pointer; background: #fff; transition: background 0.2s; position: relative; }
+  .dimensi-header:hover { background: #f8fafc; }
+  .dimensi-badge { font-size: 0.8rem; font-weight: 800; padding: 0.3rem 0.8rem; border-radius: 20px; margin-right: 1.2rem; flex-shrink: 0; }
+  .dimensi-title { font-weight: 700; margin: 0 0 0.3rem 0; font-size: 1.05rem; }
+  .dimensi-desc { font-size: 0.9rem; color: var(--text-muted); margin: 0; font-weight: 500; }
+  .dimensi-body { display: none; padding: 1.5rem; background: #f8fafc; border-top: 1px solid var(--border); }
+  
+  .section-label { font-size: 0.8rem; font-weight: 800; letter-spacing: 0.5px; color: #475569; margin: 1rem 0 0.5rem; }
+  .list-obs { list-style: none; padding: 0; margin: 0; }
+  .list-obs li { font-size: 0.9rem; margin-bottom: 0.6rem; padding-left: 1.5rem; position: relative; font-weight: 500; color: var(--text-main); }
+  .list-obs li::before { content: "→"; position: absolute; left: 0; color: var(--primary); font-weight: bold; }
+  
+  .list-q { border-left: 4px solid #cbd5e1; padding-left: 1rem; margin-left: 0.5rem; }
+  .list-q p { font-size: 0.95rem; margin-bottom: 0.8rem; font-style: italic; color: #0f172a; font-weight: 500; }
+
+  /* Proyeksi & Note */
+  .hyp-box { padding: 1.5rem; border-radius: 8px; margin-bottom: 1.2rem; border-left: 5px solid var(--border); background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+  .hyp-box h4 { margin: 0 0 0.8rem; font-size: 1.05rem; font-weight: 800; }
+  .hyp-box p { font-size: 0.95rem; margin: 0 0 0.8rem; color: var(--text-main); font-weight: 500; }
+  .hyp-evidence { font-size: 0.85rem; color: var(--text-muted); padding-top: 0.8rem; border-top: 1px dashed #94a3b8; font-weight: 500; }
+
+  .tip-box { background: var(--primary-light); border: 1px solid #93c5fd; padding: 1.5rem; border-radius: 10px; margin-top: 2.5rem; display: flex; gap: 1rem; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1); }
+  .tip-icon { font-size: 1.8rem; }
+  .tip-content h4 { color: #1e3a8a; margin: 0 0 0.5rem 0; font-weight: 800; }
+  .tip-content p { font-size: 0.9rem; margin: 0; color: #1e3a8a; font-weight: 500; }
+
+  /* ========================================= */
+  /* MEDIA QUERIES UNTUK TAMPILAN HP (RESPONSIVE) */
+  /* ========================================= */
+  @media (max-width: 768px) {
+    body { padding: 1rem; }
+    h1 { font-size: 1.3rem; margin-bottom: 1rem; }
+    
+    .tab-content { padding: 1.2rem; }
+    .tab-btn { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+    
+    /* Paksa kotak di Tab 1 numpuk vertikal kalau di HP */
+    .flow-card { flex: 1 1 100% !important; max-width: 100% !important; margin-bottom: 0.5rem; }
+    .flow-row { gap: 0.8rem; }
+    
+    /* Rapikan label panah biar tulisan gak kepotong */
+    .arrow-label { width: 90%; white-space: normal; line-height: 1.4; padding: 0.6rem; margin: 0 auto; }
+    
+    /* Rapikan judul dimensi di Tab 2 */
+    .dimensi-header { flex-direction: column; gap: 0.8rem; align-items: flex-start; }
+    .dimensi-header div:last-child { position: absolute; right: 1rem; top: 1.25rem; } /* Icon plus/minus */
+    .dimensi-badge { margin-bottom: 0.5rem; }
+    
+    .tip-box { flex-direction: column; text-align: center; gap: 0.5rem; padding: 1rem; }
+    .tip-icon { font-size: 2rem; margin: 0 auto; }
+  }
+
+</style>
+</head>
+<body>
+
+  <h1>Visualisasi Kerangka Operasional EBDM</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="openTab('tab1')">① Alur Logika</button>
+    <button class="tab-btn" onclick="openTab('tab2')">② Matriks Operasionalisasi</button>
+    <button class="tab-btn" onclick="openTab('tab3')">③ Proyeksi Temuan</button>
+  </div>
+
+  <div id="tab1" class="tab-content active">
+    
+    <div class="flow-section">
+      <div class="flow-title" style="color: var(--c-d1);">TAHAP 1: AKAR MASALAH</div>
+      <div class="flow-row">
+        <div class="flow-card" style="border-top: 4px solid var(--c-d1);">
+          <h4>Struktur Feodal</h4>
+          <p>Yayasan = pemegang veto mutlak</p>
+        </div>
+        <div class="flow-card" style="border-top: 4px solid var(--c-d1);">
+          <h4>Otonomi Terbatas</h4>
+          <p>Kepala sekolah tanpa kuasa eksekusi data</p>
+        </div>
+        <div class="flow-card" style="border-top: 4px solid var(--c-d1);">
+          <h4>Keputusan Intuitif</h4>
+          <p>Ego & kebiasaan vs fakta empiris</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center;">
+      <div class="arrow-down">↓</div>
+      <div class="arrow-label">Kondisi ini memunculkan kebutuhan akan...</div>
+    </div>
+
+    <div class="flow-section">
+      <div class="flow-title" style="color: var(--c-d2);">TAHAP 2: PISAU TEORI (EBM Pfeffer & Sutton)</div>
+      <div class="flow-row">
+        <div class="flow-card" style="border-color: var(--c-d2);"><h4>D1: Fakta Internal</h4><p>Data nyata organisasi</p></div>
+        <div class="flow-card" style="border-color: var(--c-d2);"><h4>D2: Bukti Ilmiah</h4><p>Literatur & best practice</p></div>
+        <div class="flow-card" style="border-color: var(--c-d2);"><h4>D3: Etika & Nilai</h4><p>Moral & keadilan</p></div>
+        <div class="flow-card" style="border-color: var(--c-d2);"><h4>D4: Stakeholder</h4><p>Dampak pada warga sekolah</p></div>
+      </div>
+    </div>
+
+    <div style="text-align: center;">
+      <div class="arrow-down">↓</div>
+      <div class="arrow-label">Diuji di lapangan melalui pendekatan kualitatif...</div>
+    </div>
+
+    <div class="flow-section">
+      <div class="flow-title" style="color: var(--c-d3);">TAHAP 3: FOKUS LAPANGAN</div>
+      <div class="flow-row">
+        <div class="flow-card" style="flex: 1 1 260px; border-left: 4px solid var(--c-d3);">
+          <h4>Wawancara Mendalam</h4>
+          <p>Eksplorasi informan kunci (Kepsek, Yayasan, Eks-Kepsek)</p>
+        </div>
+        <div class="flow-card" style="flex: 1 1 260px; border-left: 4px solid var(--c-d3);">
+          <h4>Observasi Partisipatif</h4>
+          <p>Dinamika rapat kerja & forum keputusan</p>
+        </div>
+        <div class="flow-card" style="flex: 1 1 260px; border-left: 4px solid var(--c-d3);">
+          <h4>Studi Dokumen</h4>
+          <p>SK, Notulensi, Laporan Evaluasi, Rapor Mutu</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center;">
+      <div class="arrow-down">↓</div>
+      <div class="arrow-label">Menghasilkan output penelitian...</div>
+    </div>
+
+    <div class="flow-section">
+      <div class="flow-title" style="color: var(--c-d4);">TAHAP 4: OUTPUT YANG DIHARAPKAN</div>
+      <div class="flow-row">
+        <div class="flow-card" style="flex: 1 1 380px; background: var(--bg-d4); border: 2px solid var(--c-d4);">
+          <h4>Peta Benturan EBDM vs Realita</h4>
+          <p>Dokumentasi presisi di mana dan mengapa data diabaikan oleh sistem institusi.</p>
+        </div>
+        <div class="flow-card" style="flex: 1 1 380px; background: var(--bg-d4); border: 2px solid var(--c-d4);">
+          <h4>Rekomendasi Model Adaptif</h4>
+          <p>Desain implementasi EBDM yang realistis untuk ekosistem pendidikan Islam swasta.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="tab2" class="tab-content">
+    <p style="font-size:0.95rem; color:var(--text-muted); font-weight:500; margin-bottom:1.5rem;">Klik baris untuk melihat fokus observasi dan draf pertanyaan pancingan (strategi netral ke sensitif).</p>
+
+    <div class="dimensi-card">
+      <div class="dimensi-header" onclick="toggleAcc(this)">
+        <div style="display:flex; align-items:flex-start; flex-direction: column;">
+          <span class="dimensi-badge" style="background:var(--bg-d1); color:var(--c-d1);">DIMENSI 1</span>
+          <div style="margin-top: 0.5rem;">
+            <h4 class="dimensi-title">Fakta Internal Organisasi</h4>
+            <p class="dimensi-desc">Keputusan bertumpu pada data nyata (hasil belajar, kehadiran, keuangan).</p>
+          </div>
+        </div>
+        <div style="color:#64748b; font-size:1.2rem; font-weight:bold;">+</div>
+      </div>
+      <div class="dimensi-body">
+        <div class="section-label">FOKUS OBSERVASI</div>
+        <ul class="list-obs">
+          <li>Ketersediaan dashboard/laporan kinerja saat rapat.</li>
+          <li>Notulensi rapat: apakah data disebut sebagai dasar, atau sekadar pemanis retorika?</li>
+          <li>Aksesibilitas data EDS (Evaluasi Diri Sekolah) bagi pimpinan.</li>
+        </ul>
+        <div class="section-label">PERTANYAAN PANCINGAN</div>
+        <div class="list-q">
+          <p>"Pak/Bu, kalau yayasan minta program baru, data pendukung apa yang biasanya disiapkan sekolah?"</p>
+          <p>"Kapan terakhir kali keputusan yayasan berubah karena Bapak/Ibu menyajikan data empiris?"</p>
+          <p>"Apakah Bapak/Ibu punya ruang untuk menolak arahan yayasan jika data sekolah menunjukkan sebaliknya?"</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dimensi-card">
+      <div class="dimensi-header" onclick="toggleAcc(this)">
+        <div style="display:flex; align-items:flex-start; flex-direction: column;">
+          <span class="dimensi-badge" style="background:var(--bg-d2); color:var(--c-d2);">DIMENSI 2</span>
+          <div style="margin-top: 0.5rem;">
+            <h4 class="dimensi-title">Bukti Ilmiah & Literatur</h4>
+            <p class="dimensi-desc">Berbasis riset/best practice, bukan sekadar asumsi "katanya bagus".</p>
+          </div>
+        </div>
+        <div style="color:#64748b; font-size:1.2rem; font-weight:bold;">+</div>
+      </div>
+      <div class="dimensi-body">
+        <div class="section-label">FOKUS OBSERVASI</div>
+        <ul class="list-obs">
+          <li>Adanya literatur manajemen/kebijakan pendidikan di ruang pimpinan.</li>
+          <li>Rujukan ke Permendikbud atau jurnal saat merumuskan kebijakan.</li>
+          <li>Jenis pelatihan yang diikuti pimpinan (motivasi vs evidence-based).</li>
+        </ul>
+        <div class="section-label">PERTANYAAN PANCINGAN</div>
+        <div class="list-q">
+          <p>"Ketika ada inovasi kurikulum dari yayasan, biasanya merujuk ke literatur atau sekolah percontohan mana?"</p>
+          <p>"Siapa/apa yang jadi acuan utama di sini: instruksi yayasan, insting, atau hasil riset pendidikan?"</p>
+          <p>"Pernah bawa rekomendasi dari jurnal/pelatihan ke rapat yayasan? Gimana responsnya?"</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dimensi-card">
+      <div class="dimensi-header" onclick="toggleAcc(this)">
+        <div style="display:flex; align-items:flex-start; flex-direction: column;">
+          <span class="dimensi-badge" style="background:var(--bg-d3); color:var(--c-d3);">DIMENSI 3</span>
+          <div style="margin-top: 0.5rem;">
+            <h4 class="dimensi-title">Etika & Nilai Moral</h4>
+            <p class="dimensi-desc">Filter etis keputusan, sesuai dengan nilai-nilai Islam dan asas keadilan.</p>
+          </div>
+        </div>
+        <div style="color:#64748b; font-size:1.2rem; font-weight:bold;">+</div>
+      </div>
+      <div class="dimensi-body">
+        <div class="section-label">FOKUS OBSERVASI</div>
+        <ul class="list-obs">
+          <li>Mekanisme resmi untuk komplain/keberatan terhadap kebijakan struktural.</li>
+          <li>Potensi konflik kepentingan (nepotisme) dalam struktur yayasan-sekolah.</li>
+          <li>Penggunaan narasi agama: apakah untuk musyawarah sejati, atau menekan perbedaan pendapat?</li>
+        </ul>
+        <div class="section-label">PERTANYAAN PANCINGAN</div>
+        <div class="list-q">
+          <p>"Pernah ada kebijakan yayasan yang menurut Bapak/Ibu pribadi kurang *fair* buat tim di sekolah?"</p>
+          <p>"Dalam konteks lembaga Islam, apakah nilai syura (musyawarah) benar-benar mewarnai rapat, atau keputusan sudah matang dari atas?"</p>
+          <p>"Kalau guru merasa dirugikan oleh sistem, saluran komplainnya ke mana? Jalan nggak sistemnya?"</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dimensi-card">
+      <div class="dimensi-header" onclick="toggleAcc(this)">
+        <div style="display:flex; align-items:flex-start; flex-direction: column;">
+          <span class="dimensi-badge" style="background:var(--bg-d4); color:var(--c-d4);">DIMENSI 4</span>
+          <div style="margin-top: 0.5rem;">
+            <h4 class="dimensi-title">Dampak pada Stakeholder</h4>
+            <p class="dimensi-desc">Mempertimbangkan konsekuensi pada guru, siswa, dan orang tua.</p>
+          </div>
+        </div>
+        <div style="color:#64748b; font-size:1.2rem; font-weight:bold;">+</div>
+      </div>
+      <div class="dimensi-body">
+        <div class="section-label">FOKUS OBSERVASI</div>
+        <ul class="list-obs">
+          <li>Eksistensi survei kepuasan stakeholder sbg instrumen evaluasi.</li>
+          <li>Cara komunikasi kebijakan krusial (SPP, mutasi) ke bawah.</li>
+          <li>Adanya forum dengar pendapat (hearing) sebelum palu diketuk.</li>
+        </ul>
+        <div class="section-label">PERTANYAAN PANCINGAN</div>
+        <div class="list-q">
+          <p>"Kalau ada kebijakan besar soal guru atau siswa, siapa yang pertama kali diajak ngobrol buat ngetes ombak?"</p>
+          <p>"Gimana caranya menyeimbangkan antara target dari yayasan dan kesejahteraan psikologis guru di lapangan?"</p>
+          <p>"Pernah ada kebijakan yang niat yayasan baik, tapi dampaknya malah negatif di bawah? Terus evaluasinya gimana?"</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab3" class="tab-content">
+    <p style="font-size:0.95rem; color:var(--text-muted); font-weight:500; margin-bottom:1.5rem;">Hipotesis kerja (kompas lapangan). Jika realita berbeda, itu justru temuan yang menarik.</p>
+
+    <div class="hyp-box" style="border-left-color: var(--c-d1);">
+      <h4 style="color: var(--c-d1);">D1: Data vs Kuasa Rapat</h4>
+      <p>Data internal (rapor, hasil belajar) itu <strong>ada</strong>, tapi sengaja "difilter" atau tidak dibawa ke meja yayasan agar tidak memicu konflik atau membantah kemauan elit.</p>
+      <div class="hyp-evidence">Sinyal: Notulensi rapat nir-angka; frasa "nanti disampaikan ke ketua" sbg jurus mengelak.</div>
+    </div>
+
+    <div class="hyp-box" style="border-left-color: var(--c-d2);">
+      <h4 style="color: var(--c-d2);">D2: Riset vs Tradisi</h4>
+      <p>Basis keputusan bertumpu pada pengalaman pribadi elit yayasan atau "copy-paste" pesantren induk, bukan literatur manajemen mutakhir. Budaya literasi manajerial mandek.</p>
+      <div class="hyp-evidence">Sinyal: Pelatihan lebih fokus ke motivasi/akhlak dibanding *evidence-based management*.</div>
+    </div>
+
+    <div class="hyp-box" style="border-left-color: var(--c-d3);">
+      <h4 style="color: var(--c-d3);">D3: Etika vs Nepotisme Institusi</h4>
+      <p>Retorika "ketaatan (sami'na wa atha'na)" sering dipakai untuk meredam kritik berbasis data. Kepala sekolah dilema antara loyalitas (aman secara jabatan) dan objektivitas.</p>
+      <div class="hyp-evidence">Sinyal: Keengganan informan membahas relasi keluarga di pucuk pimpinan yayasan.</div>
+    </div>
+
+    <div class="hyp-box" style="border-left-color: var(--c-d4);">
+      <h4 style="color: var(--c-d4);">D4: Stakeholder vs Top-Down</h4>
+      <p>Suara guru/orang tua hanya didengar seremonial. Kepala sekolah difungsikan sebagai *buffer* (tameng pelindung) yayasan dari protes bawah, bukan pengambil keputusan merdeka.</p>
+      <div class="hyp-evidence">Sinyal: RAKER sifatnya hanya sosialisasi/doktrinasi, bukan arena adu argumen logis.</div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">💡</div>
+      <div class="tip-content">
+        <h4>Catatan Metodologis Kritis</h4>
+        <p>Seperti saran analisis sebelumnya, informan yang paling jujur dan minim filter defensif di institusi model begini <strong>bukan kepala sekolah yang masih menjabat</strong>. Untuk triangulasi yang tajam, kejar: <br><br>
+        <strong>1. Mantan Kepala Sekolah</strong> (yang sudah tidak punya konflik kepentingan/ketakutan politis).<br>
+        <strong>2. Guru Senior (10+ tahun)</strong> (yang tahu sejarah bergesernya kebijakan dari waktu ke waktu).<br><br>
+        Mereka sering kali paham bahwa pengabaian EBDM selama ini dianggap "normal", dan bisa ngasih perspektif <i>first-principles</i> kenapa sistem itu awet.</p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function openTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function toggleAcc(el) {
+    const body = el.nextElementSibling;
+    const isVisible = body.style.display === 'block';
+    
+    // Close all
+    document.querySelectorAll('.dimensi-body').forEach(b => b.style.display = 'none');
+    document.querySelectorAll('.dimensi-header div:last-child').forEach(icon => icon.textContent = '+');
+    
+    // Toggle current
+    if (!isVisible) {
+      body.style.display = 'block';
+      el.querySelector('div:last-child').textContent = '−';
+    }
+  }
+</script>
+</body>
+</html>
